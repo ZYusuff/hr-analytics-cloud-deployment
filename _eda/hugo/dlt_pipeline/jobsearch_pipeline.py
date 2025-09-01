@@ -35,16 +35,18 @@ def jobsearch_source(
     @dlt.resource(name="jobads")
     def get_jobads(query, occupation_fields):
         for occupation_field in occupation_fields:
+    def get_jobads():
+        for occupation_field in config.occupation_fields:
             for page in client.paginate(
                 path="/search",
-                params={"q": query, "occupation-field": occupation_field},
+                params={"q": config.query, "occupation-field": occupation_field},
             ):
                 response_json = page.response.json()
 
                 for jobad in response_json.get("hits", []):
                     yield jobad
 
-    yield get_jobads(config.query, config.occupation_fields)
+    yield get_jobads()
 
 
 if __name__ == "__main__":
