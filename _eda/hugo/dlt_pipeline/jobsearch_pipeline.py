@@ -32,9 +32,11 @@ def jobsearch_source(
         ),
     )
 
-    @dlt.resource(name="jobads")
-    def get_jobads(query, occupation_fields):
-        for occupation_field in occupation_fields:
+    @dlt.resource(
+        name="jobads",
+        write_disposition="append",
+        primary_key="id",
+    )
     def get_jobads():
         for occupation_field in config.occupation_fields:
             for page in client.paginate(
