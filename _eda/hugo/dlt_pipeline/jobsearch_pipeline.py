@@ -14,19 +14,23 @@ from dlt.sources.helpers.rest_client.paginators import OffsetPaginator
 class JobsearchConfig:
     query: str = ""
     occupation_fields: list[str] = field(default_factory=lambda: [""])
+    limit: int = 100
+    offset: int = 1000
 
 
 @dlt.source
 def jobsearch_source(
     config: JobsearchConfig = dlt.config.value,
 ):
-    client = RESTClient(
-        base_url="https://jobsearch.api.jobtechdev.se/",
-        paginator=OffsetPaginator(limit=100, maximum_offset=200),
-    )
-
     query = config.query
     occupation_fields = config.occupation_fields
+    limit = config.limit
+    offset = config.offset
+
+    client = RESTClient(
+        base_url="https://jobsearch.api.jobtechdev.se/",
+        paginator=OffsetPaginator(limit=limit, maximum_offset=offset),
+    )
 
     @dlt.resource(name="jobads")
     def get_jobads(query, occupation_fields):
