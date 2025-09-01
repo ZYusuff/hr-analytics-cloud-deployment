@@ -22,14 +22,9 @@ class JobsearchConfig:
 def jobsearch_source(
     config: JobsearchConfig = dlt.config.value,
 ):
-    query = config.query
-    occupation_fields = config.occupation_fields
-    limit = config.limit
-    offset = config.offset
-
     client = RESTClient(
         base_url="https://jobsearch.api.jobtechdev.se/",
-        paginator=OffsetPaginator(limit=limit, maximum_offset=offset),
+        paginator=OffsetPaginator(limit=config.limit, maximum_offset=config.offset),
     )
 
     @dlt.resource(name="jobads")
@@ -44,7 +39,7 @@ def jobsearch_source(
                 for jobad in response_json.get("hits", []):
                     yield jobad
 
-    yield get_jobads(query, occupation_fields)
+    yield get_jobads(config.query, config.occupation_fields)
 
 
 if __name__ == "__main__":
