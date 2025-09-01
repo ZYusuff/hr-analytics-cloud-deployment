@@ -1,57 +1,13 @@
 import os
-from dataclasses import field
 from pathlib import Path
 from pprint import pprint
 
 import dlt
 import duckdb
-from dlt.sources.config import configspec
-from dlt.sources.helpers.rest_client import RESTClient
-from dlt.sources.helpers.rest_client.paginators import OffsetPaginator
+from sources.jobsearch_source import jobsearch_source
 
 
-@configspec
-class JobsearchConfig:
-    query: str = ""
-    occupation_fields: list[str] = field(default_factory=lambda: [""])
-    limit: int = 100
-    offset: int = 0
-    max_offset: int = 1000
-
-
-@dlt.source
-def jobsearch_source(
-    config: JobsearchConfig = dlt.config.value,
-):
-    client = RESTClient(
-        base_url="https://jobsearch.api.jobtechdev.se/",
-        paginator=OffsetPaginator(
-            limit=config.limit,
-            offset=config.offset,
-            maximum_offset=config.max_offset,
-        ),
-    )
-
-    @dlt.resource(
-        name="jobads",
-        write_disposition="append",
-        primary_key="id",
-    )
-    def get_jobads():
-        for occupation_field in config.occupation_fields:
-            for page in client.paginate(
-                path="/search",
-                params={"q": config.query, "occupation-field": occupation_field},
-            ):
-                response_json = page.response.json()
-
-                for jobad in response_json.get("hits", []):
-                    yield jobad
-
-    yield get_jobads()
-
-
-if __name__ == "__main__":
+def main():
     os.chdir(Path(__file__).parent)
 
     db = duckdb.connect(":memory:")
@@ -74,3 +30,7 @@ if __name__ == "__main__":
         """
         ).fetchall()
     )
+
+
+if __name__ == "__main__":
+    main()
