@@ -15,7 +15,8 @@ class JobsearchConfig:
     query: str = ""
     occupation_fields: list[str] = field(default_factory=lambda: [""])
     limit: int = 100
-    offset: int = 1000
+    offset: int = 0
+    max_offset: int = 1000
 
 
 @dlt.source
@@ -24,7 +25,11 @@ def jobsearch_source(
 ):
     client = RESTClient(
         base_url="https://jobsearch.api.jobtechdev.se/",
-        paginator=OffsetPaginator(limit=config.limit, maximum_offset=config.offset),
+        paginator=OffsetPaginator(
+            limit=config.limit,
+            offset=config.offset,
+            maximum_offset=config.max_offset,
+        ),
     )
 
     @dlt.resource(name="jobads")
