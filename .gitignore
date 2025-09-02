@@ -1,6 +1,7 @@
 # project related files
 
 # dlt_pipeline
+secrets.toml
 
 # snowflake_worksheets
 create_user_sf.sql
