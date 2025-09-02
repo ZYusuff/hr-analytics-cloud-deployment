@@ -1,3 +1,23 @@
+# ignore for testing
+*.wal
+ads_data_warehouse.duckdb
+.vscode
+.dlt/
+
+# Custom DLT folders
+_eda/katrin/ads_data_warehouse.duckdb
+_eda/*/*.duckdb
+
+# DBeaver related files
+.dbeaver/
+.drivers/
+Scripts/
+credentials-config.json
+data-sources.json
+project-metadata.json
+.project
+*.db
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
