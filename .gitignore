@@ -1,3 +1,10 @@
+# project related files
+
+# dlt_pipeline
+
+# snowflake_worksheets
+create_user_sf.sql
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

@@ -1,0 +1,5 @@
+USE ROLE USERADMIN;
+
+CREATE USER IF NOT EXISTS extract_loader
+    PASSWORD='' -- create a password and fill in here
+    DEFAULT_WAREHOUSE = COMPUTE_WH;
