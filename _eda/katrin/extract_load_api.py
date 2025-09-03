@@ -13,15 +13,15 @@ def _get_ads(url_for_search, params):
 
 @dlt.resource(
     write_disposition="replace",
-    columns={
-        'original_id': {'data_type': 'text'},
-        'description__company_information': {'data_type': 'text'},
-        'description__needs': {'data_type': 'text'},
-        'description__requirements': {'data_type': 'text'},
-        'employer__email': {'data_type': 'text'},
-        'driving_license': {'data_type': 'json'},
-        'removed_date': {'data_type': 'timestamp'}
-    }
+    # columns={
+    #     'original_id': {'data_type': 'text'},
+    #     'description__company_information': {'data_type': 'text'},
+    #     'description__needs': {'data_type': 'text'},
+    #     'description__requirements': {'data_type': 'text'},
+    #     'employer__email': {'data_type': 'text'},
+    #     'driving_license': {'data_type': 'json'},
+    #     'removed_date': {'data_type': 'timestamp'}
+    # }
 )
 def jobsearch_resource(params):
     """

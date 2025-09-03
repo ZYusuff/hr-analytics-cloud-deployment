@@ -8,6 +8,10 @@ ads_data_warehouse.duckdb
 _eda/katrin/ads_data_warehouse.duckdb
 _eda/*/*.duckdb
 
+# user details
+create_user_sf.sql
+
+
 # DBeaver related files
 .dbeaver/
 .drivers/
