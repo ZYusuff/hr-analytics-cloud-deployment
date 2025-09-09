@@ -9,5 +9,3 @@ create user anon_engineer
     COMMENT = 'Jobsearch-HR-Analytics - Developer';
 
 show users;
-
-alter user anon_engineer set DEFAULT_ROLE = 'JOB_ADS_ADMIN_ROLE';
