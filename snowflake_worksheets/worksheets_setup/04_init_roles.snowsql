@@ -1,0 +1,29 @@
+use role ACCOUNTADMIN;
+
+--
+
+create role JOB_ADS_PIPELINE_ROLE;
+create role JOB_ADS_INGESTION_ROLE;
+create role JOB_ADS_TRANSFORMATION_ROLE;
+create role JOB_ADS_ANALYTICS_ROLE;
+
+--
+
+grant role JOB_ADS_INGESTION_ROLE to role JOB_ADS_PIPELINE_ROLE;
+grant role JOB_ADS_TRANSFORMATION_ROLE to role JOB_ADS_PIPELINE_ROLE;
+grant role JOB_ADS_ANALYTICS_ROLE to role JOB_ADS_PIPELINE_ROLE;
+
+grant role JOB_ADS_PIPELINE_ROLE to role JOB_ADS_ADMIN_ROLE;
+
+--
+
+grant usage on WAREHOUSE COMPUTE_WH to role JOB_ADS_PIPELINE_ROLE;
+grant usage on WAREHOUSE COMPUTE_WH to role JOB_ADS_INGESTION_ROLE;
+grant usage on WAREHOUSE COMPUTE_WH to role JOB_ADS_TRANSFORMATION_ROLE;
+grant usage on WAREHOUSE COMPUTE_WH to role JOB_ADS_ANALYTICS_ROLE;
+
+--
+
+grant role JOB_ADS_INGESTION_ROLE to user ingestion_user;
+grant role JOB_ADS_TRANSFORMATION_ROLE to user transformation_user;
+grant role JOB_ADS_ANALYTICS_ROLE to user analytics_user;

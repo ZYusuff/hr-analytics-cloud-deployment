@@ -1,0 +1,14 @@
+use role JOB_ADS_ADMIN_ROLE;
+
+use database JOB_ADS;
+
+create schema if not exists staging
+    comment = 'Unprocessed job ad data from external jobsearch API';
+
+create schema if not exists warehouse
+    comment = 'Cleaned and transformed data for analytics';
+
+create schema if not exists marts
+    comment = 'Business-ready datasets for reporting and analysis';
+
+show schemas;

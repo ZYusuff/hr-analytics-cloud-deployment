@@ -1,0 +1,9 @@
+use role ACCOUNTADMIN;
+
+create role JOB_ADS_ADMIN_ROLE;     -- database creation & management
+
+grant create database on ACCOUNT to role JOB_ADS_ADMIN_ROLE;
+grant usage on WAREHOUSE COMPUTE_WH to role JOB_ADS_ADMIN_ROLE;
+
+grant role JOB_ADS_ADMIN_ROLE to role ACCOUNTADMIN;
+grant role JOB_ADS_ADMIN_ROLE to user anon_engineer;

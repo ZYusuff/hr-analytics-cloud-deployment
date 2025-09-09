@@ -1,0 +1,11 @@
+use role ACCOUNTADMIN;
+
+create warehouse COMPUTE_WH with
+WAREHOUSE_SIZE = 'X-Small'
+AUTO_SUSPEND = 300
+AUTO_RESUME = TRUE
+INITIALLY_SUSPENDED = TRUE
+STATEMENT_TIMEOUT_IN_SECONDS = 1800
+COMMENT = 'Jobsearch-HR-Analytics WH';
+
+show warehouses;

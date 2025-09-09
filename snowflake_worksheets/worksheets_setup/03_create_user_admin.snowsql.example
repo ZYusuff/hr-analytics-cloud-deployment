@@ -1,0 +1,13 @@
+use role USERADMIN;
+
+-- https://docs.snowflake.cn/en/sql-reference/sql/create-user
+create user anon_engineer
+    PASSWORD = '####'
+    DEFAULT_ROLE = 'JOB_ADS_ADMIN_ROLE'
+    DEFAULT_WAREHOUSE = 'COMPUTE_WH'
+    DISPLAY_NAME = 'Anonymous Engineer'
+    COMMENT = 'Jobsearch-HR-Analytics - Developer';
+
+show users;
+
+alter user anon_engineer set DEFAULT_ROLE = 'JOB_ADS_ADMIN_ROLE';

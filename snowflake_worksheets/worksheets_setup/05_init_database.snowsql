@@ -1,0 +1,6 @@
+use role JOB_ADS_ADMIN_ROLE;
+
+create database if not exists JOB_ADS
+    comment = 'Jobsearch-HR-Analytics data platform';
+
+show databases;
