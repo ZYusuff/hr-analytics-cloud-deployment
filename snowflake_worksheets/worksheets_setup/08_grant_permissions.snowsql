@@ -1,15 +1,16 @@
 use role JOB_ADS_ADMIN_ROLE;
 
+-- Grant database access to pipeline role
 grant usage on database JOB_ADS to role JOB_ADS_PIPELINE_ROLE;
 
--- ingestion
+-- Ingestion role permissions for raw data loading
 grant usage on database JOB_ADS to role JOB_ADS_INGESTION_ROLE;
 
 grant all on schema JOB_ADS.staging to role JOB_ADS_INGESTION_ROLE;
 grant all on all tables in schema JOB_ADS.staging to role JOB_ADS_INGESTION_ROLE;
 grant all on future tables in schema JOB_ADS.staging to role JOB_ADS_INGESTION_ROLE;
 
--- transformation
+-- Transformation role permissions for data processing
 grant usage on database JOB_ADS to role JOB_ADS_TRANSFORMATION_ROLE;
 
 grant usage on schema JOB_ADS.staging to role JOB_ADS_TRANSFORMATION_ROLE;
@@ -24,7 +25,7 @@ grant all on schema JOB_ADS.marts to role JOB_ADS_TRANSFORMATION_ROLE;
 grant all on all tables in schema JOB_ADS.marts to role JOB_ADS_TRANSFORMATION_ROLE;
 grant all on future tables in schema JOB_ADS.marts to role JOB_ADS_TRANSFORMATION_ROLE;
 
--- analytics
+-- Analytics role permissions for data consumption
 grant usage on database JOB_ADS to role JOB_ADS_ANALYTICS_ROLE;
 
 grant usage on schema JOB_ADS.warehouse to role JOB_ADS_ANALYTICS_ROLE;

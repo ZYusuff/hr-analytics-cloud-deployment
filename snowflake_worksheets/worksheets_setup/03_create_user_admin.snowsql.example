@@ -1,6 +1,6 @@
 use role USERADMIN;
 
--- https://docs.snowflake.cn/en/sql-reference/sql/create-user
+-- Create developer user for database administration
 create user anon_engineer
     PASSWORD = '####'
     DEFAULT_ROLE = 'JOB_ADS_ADMIN_ROLE'

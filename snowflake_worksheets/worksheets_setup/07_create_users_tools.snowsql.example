@@ -1,5 +1,6 @@
 use role USERADMIN;
 
+-- Create service users for automated data pipeline tools
 create user ingestion_user
     PASSWORD = '####'
     DEFAULT_ROLE = 'JOB_ADS_INGESTION_ROLE'
