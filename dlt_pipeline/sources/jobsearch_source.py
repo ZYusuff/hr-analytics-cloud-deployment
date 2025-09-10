@@ -8,12 +8,12 @@ from dlt.sources.helpers.rest_client.paginators import OffsetPaginator
 
 @configspec
 class JobsearchConfig:
-    name: str = "job_ads"  # default table name
+    table_name: str = "job_ads"  # default
     query: str = ""
     occupation_fields: list[str] = field(default_factory=lambda: [""])
     limit: int = 100
     offset: int = 0
-    max_offset: int = 1900
+    max_offset: int = 1900  # jobsearch limitation
 
 
 @dlt.source
@@ -25,14 +25,18 @@ def jobsearch_source(
         paginator=OffsetPaginator(
             limit=config.limit,
             offset=config.offset,
+            total_path="$.total.value",
             maximum_offset=config.max_offset,
         ),
     )
 
     @dlt.resource(
-        name=config.name,
-        write_disposition="append",
+        name="job_ads_resource",
+        table_name=config.table_name,
+        write_disposition="merge",
         primary_key="id",
+        merge_key="id",
+        
     )
     def get_jobads():
         for occupation_field in config.occupation_fields:
