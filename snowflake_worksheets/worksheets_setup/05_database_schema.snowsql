@@ -1,0 +1,21 @@
+--
+use role job_ads_admin_role;
+
+--
+create database if not exists job_ads
+    comment = 'jobsearch-hr-analytics data platform';
+
+--
+show databases like 'job_ads';
+
+--
+use database job_ads;
+create schema if not exists staging
+    comment = 'unprocessed job ad data from external jobsearch api';
+create schema if not exists warehouse
+    comment = 'cleaned and transformed data for analytics';
+create schema if not exists marts
+    comment = 'business-ready datasets for reporting and analysis';
+
+--
+show schemas in database job_ads;
