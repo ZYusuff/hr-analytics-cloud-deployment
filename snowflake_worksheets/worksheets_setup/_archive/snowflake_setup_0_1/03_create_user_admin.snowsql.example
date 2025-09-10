@@ -2,7 +2,7 @@ use role USERADMIN;
 
 -- Create developer user for database administration
 create user anon_engineer
-    PASSWORD = '####'
+    PASSWORD = '<PASSWORD>'
     DEFAULT_ROLE = 'JOB_ADS_ADMIN_ROLE'
     DEFAULT_WAREHOUSE = 'COMPUTE_WH'
     DISPLAY_NAME = 'Anonymous Engineer'

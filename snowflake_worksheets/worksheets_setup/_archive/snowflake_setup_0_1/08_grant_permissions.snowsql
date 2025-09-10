@@ -35,3 +35,8 @@ grant select on future tables in schema JOB_ADS.warehouse to role JOB_ADS_ANALYT
 grant usage on schema JOB_ADS.marts to role JOB_ADS_ANALYTICS_ROLE;
 grant select on all tables in schema JOB_ADS.marts to role JOB_ADS_ANALYTICS_ROLE;
 grant select on future tables in schema JOB_ADS.marts to role JOB_ADS_ANALYTICS_ROLE;
+
+-- Assign specialized roles to service users
+grant role JOB_ADS_INGESTION_ROLE to user ingestion_user;
+grant role JOB_ADS_TRANSFORMATION_ROLE to user transformation_user;
+grant role JOB_ADS_ANALYTICS_ROLE to user analytics_user;
