@@ -1,0 +1,17 @@
+--
+use role useradmin;
+grant role admin_job_ads to user anon_engineer;
+grant role public to user anon_engineer;
+
+--
+use role accountadmin;
+grant create database on account to role admin_job_ads;
+
+--
+use role sysadmin;
+grant usage on warehouse compute_wh to role admin_job_ads;
+grant operate on warehouse compute_wh to role admin_job_ads;
+grant monitor on warehouse compute_wh to role admin_job_ads;
+
+--
+show grants to role admin_job_ads;

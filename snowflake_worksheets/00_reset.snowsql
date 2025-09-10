@@ -1,0 +1,33 @@
+--
+use role accountadmin;
+
+--
+drop user if exists anon_engineer;
+drop user if exists svc_dlt_ingestion;
+drop user if exists svc_dbt_transform;
+drop user if exists svc_analytics_read;
+
+--
+drop database if exists job_ads;
+drop warehouse if exists compute_wh;
+
+--
+drop role if exists analytics_reader;
+drop role if exists transformation_runner;
+drop role if exists ingestion_writer;
+drop role if exists pipeline_operator;
+drop role if exists admin_job_ads;
+
+--
+show users like 'anon_engineer';
+show users like 'svc_dlt_ingestion';
+show users like 'svc_dbt_transform';
+show users like 'svc_analytics_read';
+
+show databases like 'job_ads';
+show warehouses like 'compute_wh';
+
+show roles like 'pipeline_operator';
+show roles like 'ingestion_writer';
+show roles like 'transformation_runner';
+show roles like 'analytics_reader';

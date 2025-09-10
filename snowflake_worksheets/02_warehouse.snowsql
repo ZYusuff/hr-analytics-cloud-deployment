@@ -1,0 +1,14 @@
+--
+use role sysadmin;
+
+--
+create warehouse compute_wh with
+    warehouse_size = 'x-small'
+    auto_suspend = 300
+    auto_resume = true
+    initially_suspended = true
+    statement_timeout_in_seconds = 1800
+    comment = 'jobsearch-hr-analytics wh';
+
+--
+show warehouses like 'compute_wh';
