@@ -2,20 +2,20 @@
 use role useradmin;
 
 --
-create role if not exists job_ads_admin_role;
-create role if not exists job_ads_pipeline_role;
-create role if not exists job_ads_ingestion_role;
-create role if not exists job_ads_transformation_role;
-create role if not exists job_ads_analytics_role;
+create role if not exists admin_job_ads;
+create role if not exists pipeline_operator;
+create role if not exists ingestion_writer;
+create role if not exists transformation_runner;
+create role if not exists analytics_reader;
 
 --
-grant role job_ads_admin_role to role accountadmin;
-grant role job_ads_pipeline_role to role job_ads_admin_role;
+grant role admin_job_ads to role accountadmin;
+grant role pipeline_operator to role admin_job_ads;
 
 --
-grant role job_ads_ingestion_role to role job_ads_pipeline_role;
-grant role job_ads_transformation_role to role job_ads_pipeline_role;
-grant role job_ads_analytics_role to role job_ads_pipeline_role;
+grant role ingestion_writer to role pipeline_operator;
+grant role transformation_runner to role pipeline_operator;
+grant role analytics_reader to role pipeline_operator;
 
 --
 show roles like 'job_ads%';

@@ -1,5 +1,5 @@
 --
-use role job_ads_admin_role;
+use role admin_job_ads;
 
 --
 create database if not exists job_ads
