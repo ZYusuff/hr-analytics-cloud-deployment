@@ -8,7 +8,7 @@ create warehouse compute_wh with
     auto_resume = true
     initially_suspended = true
     statement_timeout_in_seconds = 1800
-    comment = 'jobsearch-hr-analytics wh';
+    comment = 'jobmarket-hr-analytics wh';
 
 --
 show warehouses like 'compute_wh';
