@@ -1,0 +1,13 @@
+--
+use role useradmin;
+
+--
+create user anon_engineer
+    password = '<PASSWORD>'
+    default_role = 'admin_job_ads'
+    default_warehouse = 'compute_wh'
+    display_name = 'anonymous engineer'
+    comment = 'jobmarket-hr-analytics - database admin';
+
+--
+show users;

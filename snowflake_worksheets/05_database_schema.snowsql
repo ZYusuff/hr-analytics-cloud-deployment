@@ -3,7 +3,7 @@ use role admin_job_ads;
 
 --
 create database if not exists job_ads
-    comment = 'jobsearch-hr-analytics data platform';
+    comment = 'jobmarket-hr-analytics data platform';
 
 --
 show databases like 'job_ads';
