@@ -4,6 +4,5 @@ select
     -- job_ads
     number_of_vacancies as vacancies,
     relevance,
-    application_deadline,
-    id as job_ad_id
+    application_deadline
 from stg_job_ads
