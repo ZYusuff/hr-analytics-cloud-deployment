@@ -7,7 +7,7 @@ select
     employer__organization_number as employer_organization_number,
     {{ capitalize_first_letter('workplace_address__street_address') }} as workplace_street_address,
     workplace_address__postcode as workplace_postcode,
-    {{ capitalize_first_letter('workplace_address__city') }} as workplace_street_address,
+    {{ capitalize_first_letter('workplace_address__city') }} as workplace_city,
     workplace_address__region as workplace_region,
     workplace_address__country as workplace_country
 from stg_job_ads
