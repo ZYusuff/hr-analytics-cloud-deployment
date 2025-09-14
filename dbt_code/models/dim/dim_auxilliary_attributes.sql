@@ -1,7 +1,9 @@
 with src_auxilliary_attributes as (select * from {{ ref('src_auxilliary_attributes') }})
 
 select
-    {{ dbt_utils.generate_surrogate_key(['access_to_own_car','driver_license','experience_required']) }} as auxilliary_attributes_id,
+    {{ dbt_utils.generate_surrogate_key(
+        ['access_to_own_car','driver_license','experience_required']
+        ) }} as auxilliary_attributes_id,  -- alpha-numerical order
     experience_required,
     driver_license,
     access_to_own_car
