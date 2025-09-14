@@ -1,4 +1,4 @@
-with src_employer as (select * from {{ ref('src_employer') }})
+with src_jobsearch as (select * from {{ ref('src_jobsearch') }})
 
 select
     {{ dbt_utils.generate_surrogate_key(
@@ -12,7 +12,7 @@ select
     workplace_city,
     workplace_region,
     workplace_country
-from src_employer
+from src_jobsearch
 
 qualify row_number() over (
     partition by employer_id

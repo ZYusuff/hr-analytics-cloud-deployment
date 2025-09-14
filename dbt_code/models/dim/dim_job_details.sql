@@ -1,8 +1,7 @@
-with src_job_details as (select * from {{ ref('src_job_details') }})
+with src_jobsearch as (select * from {{ ref('src_jobsearch') }})
 
 select
     {{ dbt_utils.generate_surrogate_key(['job_ad_id']) }} as job_details_id,
-    job_ad_id,
     headline,
     description,
     description_html_formatted,
@@ -12,7 +11,7 @@ select
     scope_of_work_min,
     scope_of_work_max
 
-from src_job_details
+from src_jobsearch
 
 qualify row_number() over (
     partition by job_details_id

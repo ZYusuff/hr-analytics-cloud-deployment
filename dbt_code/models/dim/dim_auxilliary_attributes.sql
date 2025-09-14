@@ -1,4 +1,4 @@
-with src_auxilliary_attributes as (select * from {{ ref('src_auxilliary_attributes') }})
+with src_jobsearch as (select * from {{ ref('src_jobsearch') }})
 
 select
     {{ dbt_utils.generate_surrogate_key(
@@ -7,7 +7,7 @@ select
     experience_required,
     driver_license,
     access_to_own_car
-from src_auxilliary_attributes
+from src_jobsearch
 
 qualify row_number() over (
     partition by auxilliary_attributes_id
