@@ -1,0 +1,24 @@
+models:
+  - name: fct_jobsearch
+    columns:
+      - name: auxilliary_attributes_id
+        tests:
+          - relationships:
+              to: ref('dim_auxilliary_attributes')
+              field: auxilliary_attributes_id
+      - name: employer_id
+        tests:
+          - relationships:
+              to: ref('dim_employer')
+              field: employer_id
+      - name: job_details_id
+        tests:
+          - relationships:
+              to: ref('dim_job_details')
+              field: job_details_id
+      - name: occupation_id
+        tests:
+          - relationships:
+              to: ref('dim_occupation')
+              field: occupation_id
+
