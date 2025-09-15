@@ -1,11 +1,12 @@
 import streamlit as st
-from connect_data_warehouse import query_job_listings
+# from connect_data_warehouse import query_job_listings
 
-def show():
-    st.title("📈 Demand overview")
-    st.write("This is where you can check which regions have the highest demand for certain occupations.")
+# Set the title and a short description for this page in the Streamlit app.
+st.title("📈 Geography overview")
 
-    #df = query_job_listings('mart_occupation_demand')
-    
-    st.markdown("## Raw data")
-    #st.dataframe(df)
+# Retrieve the selected occupation field from the session state.
+# This value is set by a filter on another page (e.g., the main page).
+selected_occupation_field = st.session_state.occupation_field_filter
+
+# Display a confirmation message to the user showing which filter is currently active.
+st.write(f"Analyzing data for region: **{selected_occupation_field}**")
