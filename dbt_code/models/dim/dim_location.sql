@@ -9,7 +9,7 @@ select
         location_region,
         location_region_code,
         location_municipality,
-        location_municipality_code,
+        location_municipality_code
 from src_location
 
 qualify row_number() over (
