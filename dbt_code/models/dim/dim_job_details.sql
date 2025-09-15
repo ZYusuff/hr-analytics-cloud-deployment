@@ -9,5 +9,6 @@ select
     duration,
     salary_type,
     scope_of_work_min,
-    scope_of_work_max
+    scope_of_work_max,
+    job_ad_id
 from src_job_details
