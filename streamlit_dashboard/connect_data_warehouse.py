@@ -1,12 +1,12 @@
 import os
 
 import duckdb
-import pandas as pd
 import snowflake.connector
 from dotenv import load_dotenv
+from pandas import DataFrame
 
 
-def query_job_listings(mart_table: str) -> pd.DataFrame:
+def query_job_listings(mart_table: str) -> DataFrame:
     """Queries a job listings table and returns the data as a pandas DataFrame."""
 
     load_dotenv()
@@ -26,7 +26,9 @@ def query_job_listings(mart_table: str) -> pd.DataFrame:
 
         print(f"Executing query and fetching data for '{mart_table}'...")
 
-        df = pd.read_sql(query, conn)
+        cursor = conn.cursor()
+        cursor.execute(query)
+        df = cursor.fetch_pandas_all()
 
         print(f"Successfully fetched {len(df)} rows into a Pandas DataFrame.")
 
