@@ -38,6 +38,8 @@ select
   base.vacancies,
   base.relevance,
   base.application_deadline,
+  base.publication_date,
+  base.last_publication_date,
 
   a.auxilliary_attributes_id as auxilliary_attributes_id,      -- foreign key linking to dim_auxilliary_attributes
   e.employer_id as employer_id, -- foreign key linking to dim_employer
