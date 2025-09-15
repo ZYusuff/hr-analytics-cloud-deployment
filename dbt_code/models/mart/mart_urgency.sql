@@ -7,10 +7,6 @@ WITH base AS (
   SELECT * FROM {{ ref('fct_job_ads') }}
 ),
 
-auxilliary_attributes AS (
-  SELECT * FROM {{ ref('dim_auxilliary_attributes') }}
-),
-
 job_details_dim AS (
   SELECT * FROM {{ ref('dim_job_details') }}
 ),
@@ -32,14 +28,10 @@ urgency_int AS (SELECT
   b.vacancies AS number_vacancies,
   o.occupation_field,
   o.occupation_group,
-  o.occupation_label,
-  a.experience_required,
-  a.driver_license,
-  a.access_to_own_car
+  o.occupation_label
 FROM base b
 LEFT JOIN job_details_dim jd ON b.job_details_id = jd.job_details_id
 LEFT JOIN occupation_dim o ON b.occupation_id = o.occupation_id
-LEFT JOIN auxilliary_attributes a ON b.auxilliary_attributes_id = a.auxilliary_attributes_id
 WHERE days_to_deadline >= 0  -- Only consider active job ads
 ),
 
