@@ -5,6 +5,8 @@ select
     number_of_vacancies as vacancies,
     relevance,
     application_deadline,
+    publication_date,
+    last_publication_date,
 
     -- natrual keys for base
     -- auxilliary_attributes
