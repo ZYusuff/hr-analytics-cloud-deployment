@@ -80,4 +80,4 @@ UNION ALL
 SELECT 'group' AS level, * FROM urgency_group_metrics
 UNION ALL
 SELECT 'occupation' AS level, * FROM urgency_label_metrics
-ORDER BY level, occupation_field, occupation_group, occupation_label, urgency_category;
+ORDER BY level, occupation_field, occupation_group, occupation_label, urgency_category
