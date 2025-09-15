@@ -32,47 +32,54 @@ urgency_int AS (SELECT
   b.vacancies AS number_vacancies,
   o.occupation_field,
   o.occupation_group,
-  o.occupation_label
+  o.occupation_label,
+  a.experience_required,
+  a.driver_license,
+  a.access_to_own_car
 FROM base b
 LEFT JOIN job_details_dim jd ON b.job_details_id = jd.job_details_id
 LEFT JOIN occupation_dim o ON b.occupation_id = o.occupation_id
+LEFT JOIN auxilliary_attributes a ON b.auxilliary_attributes_id = a.auxilliary_attributes_id
 WHERE days_to_deadline >= 0  -- Only consider active job ads
 ),
 
 
 urgency_field_metrics AS (
   SELECT 
-    u.occupation_field,
+    occupation_field,
     NULL AS occupation_group,
     NULL AS occupation_label,
-    COUNT(u.job_ad_id) AS total_job_ads,
-    SUM(u.number_vacancies) AS total_vacancies
-  FROM urgency_int u
-  GROUP BY u.occupation_field
+    urgency_category,
+    COUNT(job_ad_id) AS total_job_ads,
+    SUM(number_vacancies) AS total_vacancies
+  FROM urgency_int 
+  GROUP BY occupation_field, urgency_category
 ),
 
 -- Aggregate by occupation group
 urgency_group_metrics AS (
   SELECT
-    u.occupation_field,
-    u.occupation_group,
+    occupation_field,
+    occupation_group,
     NULL AS occupation_label,
-    COUNT(u.job_ad_id) AS total_job_ads,
-    SUM(u.number_vacancies) AS total_vacancies
-  FROM urgency_int u
-  GROUP BY u.occupation_field, u.occupation_group
+    urgency_category,
+    COUNT(job_ad_id) AS total_job_ads,
+    SUM(number_vacancies) AS total_vacancies
+  FROM urgency_int
+  GROUP BY occupation_field, occupation_group, urgency_category
 ),
 
 -- Aggregate by specific occupation label
 urgency_label_metrics AS (
   SELECT
-    u.occupation_field,
-    u.occupation_group,
-    u.occupation_label,
-    COUNT(u.job_ad_id) AS total_job_ads,
-    SUM(u.number_vacancies) AS total_vacancies
-  FROM urgency_int u
-  GROUP BY u.occupation_field, u.occupation_group, u.occupation_label
+    occupation_field,
+    occupation_group,
+    occupation_label,
+    urgency_category,
+    COUNT(job_ad_id) AS total_job_ads,
+    SUM(number_vacancies) AS total_vacancies
+  FROM urgency_int
+  GROUP BY occupation_field, occupation_group, occupation_label, urgency_category
 )
 
 -- Final combined mart model
@@ -81,3 +88,4 @@ UNION ALL
 SELECT 'group' AS level, * FROM urgency_group_metrics
 UNION ALL
 SELECT 'occupation' AS level, * FROM urgency_label_metrics
+ORDER BY level, occupation_field, occupation_group, occupation_label, urgency_category;
