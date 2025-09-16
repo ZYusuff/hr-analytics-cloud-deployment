@@ -5,6 +5,7 @@ WITH
 fct_job_ads AS (
     SELECT
         location_id,
+        occupation_id,
         vacancies
     FROM {{ ref('fct_job_ads') }}
 ),
@@ -14,7 +15,6 @@ dim_location AS (
     SELECT
         location_id,
         location_country_code,
-        location_country,
         location_region_code,
         location_municipality_code,
         location_country,
@@ -70,9 +70,7 @@ base_aggregations AS (
         -- Geography dimensions
         location_country_code,
         location_country,
-        location_country,
         location_region_code,
-        location_region,
         location_region,
         location_municipality_code,
         location_municipality,
@@ -204,4 +202,3 @@ ORDER BY
     location_municipality NULLS FIRST,
     occupation_field NULLS FIRST,
     occupation_group NULLS FIRST
-
