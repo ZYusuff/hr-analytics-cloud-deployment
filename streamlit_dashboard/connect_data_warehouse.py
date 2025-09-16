@@ -2,6 +2,7 @@ import os
 
 import duckdb
 import snowflake.connector
+import streamlit as st
 from dotenv import load_dotenv
 from pandas import DataFrame
 
@@ -35,6 +36,7 @@ def query_job_listings(mart_table: str) -> DataFrame:
         return df
 
 
+@st.cache_resource
 def create_job_listings_db(
     mart_table: str,
     duckdb_table_name: str = "job_listings",
