@@ -1,15 +1,20 @@
 import json
 from pathlib import Path
 
+import folium
 import plotly.express as px
 import streamlit as st
 from connect_data_warehouse import create_job_listings_db
+from streamlit_folium import st_folium
 
 PROJECT_ROOT = Path(__file__).parent.parent
 ASSETS_PATH = PROJECT_ROOT / "assets"
 
 GEOJSON_REGION_PATH = ASSETS_PATH / "swedish_regions.geojson"
 GEOJSON_MUNICIPALITY_PATH = ASSETS_PATH / "swedish_municipalities.geojson"
+
+MAP_LOCATION = [59.3293, 18.0686]  # Stockholm
+MAP_BOUNDS = [[55.33, 10.93], [69.06, 24.17]]  # Sweden
 
 
 @st.cache_data
@@ -77,21 +82,19 @@ rel_field_municipality_total = con.sql(
 """
 )
 
-# -- plotly
+# -- folium
 
-fig = px.choropleth_map(
-    data_frame=rel_field_region_total.df(),
-    geojson=geojson_region,
-    locations="LOCATION_KEY",
-    featureidkey="properties.ref:se:länskod",
-    color="sum_total_vacancies",
-)
+m = folium.Map(location=MAP_LOCATION)
 
-st.plotly_chart(
-    fig,
-    use_container_width=True,
-)
+folium.Choropleth(
+    geo_data=geojson_region,
+    data=rel_field_region_total.df(),
+    columns=["LOCATION_KEY", "sum_total_vacancies"],
+    key_on="feature.properties.ref:se:länskod",
+).add_to(m)
 
-st.dataframe(rel_field_region_total.df())
+m.fit_bounds(MAP_BOUNDS)
+m.options["maxBounds"] = MAP_BOUNDS
 
-st.dataframe(rel_field_municipality_total.df())
+# call to render Folium map in Streamlit
+st_data = st_folium(m, width=725)
