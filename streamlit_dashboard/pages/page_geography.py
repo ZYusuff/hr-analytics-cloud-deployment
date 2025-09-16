@@ -33,4 +33,22 @@ rel_field_region_total = con.sql(
 """
 )
 
+rel_field_municipality_total = con.sql(
+    """
+    select
+        location_key,
+        location_display_name,
+        occupation_display_name,
+        sum(total_vacancies) as sum_total_vacancies
+    from rel_base
+    where
+        location_level = 'municipality'
+        and occupation_level = 'field'
+    group by 1, 2, 3
+    order by sum_total_vacancies desc
+"""
+)
+
 st.dataframe(rel_field_region_total.df())
+
+st.dataframe(rel_field_municipality_total.df())
