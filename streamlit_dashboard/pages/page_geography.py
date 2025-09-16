@@ -1,5 +1,33 @@
+import json
+from pathlib import Path
+
+import plotly.express as px
 import streamlit as st
 from connect_data_warehouse import create_job_listings_db
+
+PROJECT_ROOT = Path(__file__).parent.parent
+ASSETS_PATH = PROJECT_ROOT / "assets"
+
+GEOJSON_REGION_PATH = ASSETS_PATH / "swedish_regions.geojson"
+GEOJSON_MUNICIPALITY_PATH = ASSETS_PATH / "swedish_municipalities.geojson"
+
+
+@st.cache_data
+def load_geojson(path):
+    with open(path, "r") as f:
+        return json.load(f)
+
+
+# page setup
+st.set_page_config(
+    page_title="Geographic Analysis",
+    page_icon="🗺️",
+    layout="wide",
+)
+
+# load cached geojson
+geojson_region = load_geojson(GEOJSON_REGION_PATH)
+geojson_municipality = load_geojson(GEOJSON_MUNICIPALITY_PATH)
 
 # create cached in-memroy duckdb
 con = create_job_listings_db("mart_geography", duckdb_table_name="mart_geography")
@@ -47,6 +75,21 @@ rel_field_municipality_total = con.sql(
     group by 1, 2, 3
     order by sum_total_vacancies desc
 """
+)
+
+# -- plotly
+
+fig = px.choropleth_map(
+    data_frame=rel_field_region_total.df(),
+    geojson=geojson_region,
+    locations="LOCATION_KEY",
+    featureidkey="properties.ref:se:länskod",
+    color="sum_total_vacancies",
+)
+
+st.plotly_chart(
+    fig,
+    use_container_width=True,
 )
 
 st.dataframe(rel_field_region_total.df())
