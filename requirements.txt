@@ -134,3 +134,4 @@ tzdata==2025.2
 urllib3==2.5.0
 wcwidth==0.2.13
 zipp==3.23.0
+plotly==5.18.0
