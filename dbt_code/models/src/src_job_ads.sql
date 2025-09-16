@@ -19,6 +19,10 @@ select
     employer__organization_number as employer_organization_number,
     -- job_details
     id as job_ad_id,
+    -- location
+    workplace_address__country_code as location_country_code,
+    workplace_address__region_code as location_region_code,
+    workplace_address__municipality_code as location_municipality_code,
     -- occupation
     occupation__label as occupation_label,
     occupation_group__label as occupation_group,

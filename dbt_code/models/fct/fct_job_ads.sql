@@ -32,6 +32,15 @@ job_details_dim as (
     job_details_id,
     job_ad_id
   from {{ ref('dim_job_details') }}
+),
+
+location_dim as (
+  select
+    location_id,
+    location_country_code,
+    location_region_code,
+    location_municipality_code
+  from {{ ref('dim_location') }}
 )
 
 select
@@ -41,10 +50,11 @@ select
   base.publication_date,
   base.last_publication_date,
 
-  a.auxilliary_attributes_id as auxilliary_attributes_id,      -- foreign key linking to dim_auxilliary_attributes
+  a.auxilliary_attributes_id as auxilliary_attributes_id, -- foreign key linking to dim_auxilliary_attributes
   e.employer_id as employer_id, -- foreign key linking to dim_employer
   o.occupation_id as occupation_id, -- foreign key linking to dim_occupation
-  jd.job_details_id as job_details_id      -- foreign key linking to dim_job_details
+  jd.job_details_id as job_details_id,  -- foreign key linking to dim_job_details
+  loc.location_id as location_id
 
 from base
 left join auxilliary_attributes_dim a
@@ -59,3 +69,7 @@ left join occupation_dim o
   on base.occupation_label = o.occupation_label
 left join job_details_dim jd
     on base.job_ad_id = jd.job_ad_id
+left join location_dim loc
+    on base.location_country_code = loc.location_country_code
+    and base.location_region_code = loc.location_region_code
+    and base.location_municipality_code = loc.location_municipality_code
