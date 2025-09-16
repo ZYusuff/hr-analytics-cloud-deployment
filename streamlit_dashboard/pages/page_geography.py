@@ -1,12 +1,17 @@
 import streamlit as st
-# from connect_data_warehouse import query_job_listings
+from connect_data_warehouse import create_job_listings_db
 
-# Set the title and a short description for this page in the Streamlit app.
-st.title("📈 Geography overview")
+# create cached in-memroy duckdb
+con = create_job_listings_db("mart_geography", duckdb_table_name="db_mart")
 
-# Retrieve the selected occupation field from the session state.
-# This value is set by a filter on another page (e.g., the main page).
+# filter mart by OCCUPATION_FIELD
 selected_occupation_field = st.session_state.occupation_field_filter
 
-# Display a confirmation message to the user showing which filter is currently active.
-st.write(f"Analyzing data for region: **{selected_occupation_field}**")
+if selected_occupation_field == "All":
+    rel_filtered = con.sql("select * from db_mart")
+else:
+    rel_filtered = con.sql(
+        "select * from db_mart where OCCUPATION_FIELD = ?",
+        params=[selected_occupation_field],
+    )
+
