@@ -2,8 +2,10 @@ import json
 from pathlib import Path
 
 import folium
-import plotly.express as px
+import geopandas
 import streamlit as st
+from branca.colormap import linear
+import branca
 from connect_data_warehouse import create_job_listings_db
 from streamlit_folium import st_folium
 
@@ -84,17 +86,66 @@ rel_field_municipality_total = con.sql(
 
 # -- folium
 
+rel_folium_data = con.sql(
+    """
+    select location_key, sum_total_vacancies
+    from rel_field_region_total
+"""
+)
+
+df_data = rel_folium_data.df()
+
+gdf_region = geopandas.read_file(GEOJSON_REGION_PATH, columns=["ref:se:länskod"])
+gdf_region = gdf_region.rename(columns={"ref:se:länskod": "LOCATION_KEY"})
+
+gdf_merge = gdf_region.merge(df_data, how="left", left_on="LOCATION_KEY", right_on="LOCATION_KEY")
+
+
+colormap = branca.colormap.LinearColormap(
+    vmin=gdf_merge["sum_total_vacancies"].quantile(0.0),
+    vmax=gdf_merge["sum_total_vacancies"].quantile(1),
+    colors=["yellow", "green"],
+)
+
 m = folium.Map(location=MAP_LOCATION)
-
-folium.Choropleth(
-    geo_data=geojson_region,
-    data=rel_field_region_total.df(),
-    columns=["LOCATION_KEY", "sum_total_vacancies"],
-    key_on="feature.properties.ref:se:länskod",
-).add_to(m)
-
 m.fit_bounds(MAP_BOUNDS)
 m.options["maxBounds"] = MAP_BOUNDS
 
-# call to render Folium map in Streamlit
+
+tooltip = folium.GeoJsonTooltip(
+    fields=["sum_total_vacancies"],
+    aliases=["Vacancies:"],
+    localize=True,
+    sticky=False,
+    labels=True,
+    style="""
+        background-color: #F0EFEF;
+        border: 0px solid black;
+        border-radius: 5px;
+        box-shadow: 3px;
+    """,
+    max_width=800,
+)
+
+popup = folium.GeoJsonPopup(
+    fields=["LOCATION_KEY"],
+    aliases=["% Change"],
+    localize=True,
+    labels=True,
+    style="background-color: yellow;",
+)
+
+g = folium.GeoJson(
+    gdf_merge,
+    style_function=lambda x: {
+        "fillColor": colormap(x["properties"]["sum_total_vacancies"]),
+        "color": "black",
+        "fillOpacity": 0.4,
+        "stroke": True,
+        "weight": 0.1,
+    },
+    tooltip=tooltip,
+    popup=popup
+).add_to(m)
+
 st_data = st_folium(m, width=725)
