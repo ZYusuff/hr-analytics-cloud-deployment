@@ -35,9 +35,16 @@ _OPTION_LABEL_ALL = "All"
 # -- utils
 
 
+@st.cache_resource
+def get_db_connection():
+    mart_tables = [MART_URGENCY_GEOGRAPHY]
+    return load_snowflake_to_duckdb(mart_tables)
+
+
 @st.cache_data
-def load_geopandas(path, **kwargs) -> geopandas.GeoDataFrame:
-    return geopandas.read_file(path, **kwargs)
+def load_geopandas(path, key_column) -> geopandas.GeoDataFrame:
+    gdf = geopandas.read_file(path)
+    return gdf[[key_column, "geometry"]].rename(columns={key_column: LOCATION_KEY})
 
 
 # -- setup page
@@ -50,15 +57,11 @@ st.set_page_config(page_title="Geographic Analysis", page_icon="🗺️", layout
 
 
 # create cached in-memroy duckdb
-mart_tables = [MART_GEOGRAPHY, MART_URGENCY_GEOGRAPHY]
-con = load_snowflake_to_duckdb(mart_tables)
+con = get_db_connection()
 
 # load geojson to cached geopandas
-gdf_region = load_geopandas(GEOJSON_REGION_PATH, columns=[GEOJSON_REGION_KEY])
-gdf_region = gdf_region.rename(columns={GEOJSON_REGION_KEY: LOCATION_KEY})
-
-gdf_muni = load_geopandas(GEOJSON_MUNICIPALITY_PATH, columns=[GEOJSON_MUNICIPALITY_KEY])
-gdf_muni = gdf_muni.rename(columns={GEOJSON_MUNICIPALITY_KEY: LOCATION_KEY})
+gdf_region = load_geopandas(GEOJSON_REGION_PATH, GEOJSON_REGION_KEY)
+gdf_muni = load_geopandas(GEOJSON_MUNICIPALITY_PATH, GEOJSON_MUNICIPALITY_KEY)
 
 
 # -- query datasets
