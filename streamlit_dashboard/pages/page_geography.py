@@ -146,33 +146,28 @@ cmap_fill = colormap.LinearColormap(
     vmax=gdf_map["total_vacancies"].fillna(0).max(),
     colors=["#2a9d8f", "#e9c46a", "#f4a261", "#e76f51"],
 ).to_step(n=15, method="log")
+cmap_fill.caption = "Total Vacancies"
 
 # create folium map objects
-m = folium.Map(location=MAP_LOCATION)
+m = folium.Map(
+    location=MAP_LOCATION,
+    attr='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    tiles="https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png",
+)
 m.fit_bounds(MAP_BOUNDS)
 m.options["maxBounds"] = MAP_BOUNDS
 
 tooltip = folium.GeoJsonTooltip(
     fields=["location_display_name", "total_vacancies"],
-    aliases=["_Region_", "Vacancies:"],
-    localize=True,
+    aliases=["Region:", "Total Vacancies:"],
     sticky=False,
     labels=True,
-    style="""
-        background-color: #F0EFEF;
-        border: 0px solid black;
-        border-radius: 5px;
-        box-shadow: 3px;
-    """,
-    max_width=800,
 )
 
 popup = folium.GeoJsonPopup(
-    fields=["location_display_name", "total_job_ads"],
-    aliases=["_Region_", "total job ads: "],
-    localize=True,
+    fields=["location_display_name", "total_job_ads", "total_vacancies"],
+    aliases=["Location:", "Total Job Ads:", "Total Vacancies:"],
     labels=True,
-    style="background-color: yellow;",
 )
 
 g = folium.GeoJson(
@@ -192,4 +187,5 @@ g = folium.GeoJson(
 
 cmap_fill.add_to(m)
 
-st_folium(m, use_container_width=True)
+with st.container():
+    st_folium(m, use_container_width=True)
