@@ -23,6 +23,9 @@ MART_GEOGRAPHY = "mart_geography"
 MART_URGENCY_GEOGRAPHY = "mart_urgency_geography"
 LOCATION_KEY = "LOCATION_KEY"
 
+LOCATION_LEVEL_REGION = "region"
+LOCATION_LEVEL_MUNICIPALITY = "municipality"
+
 _FILTER_STATE_KEY = "occupation_field_filter"
 _OPTION_LABEL_ALL = "All"
 
@@ -62,10 +65,10 @@ gdf_muni = gdf_muni.rename(columns={GEOJSON_MUNICIPALITY_KEY: LOCATION_KEY})
 
 
 selected_occupation_field = st.session_state.get(_FILTER_STATE_KEY, _OPTION_LABEL_ALL)
-selected_location_level = "region"
-selected_urgency_category = "urgent_7days"
+selected_location_level = LOCATION_LEVEL_REGION  # selectbox placeholder
+selected_urgency_category = "urgent_7days"  # selecctbox placeholder
 
-q = con.sql(
+rel_map_data = con.sql(
     query=f"""
 SELECT
     location_key as {LOCATION_KEY},
@@ -76,7 +79,7 @@ SELECT
 
     $occupation_field AS occupation_field
 
-FROM mart_urgency_geography
+FROM {MART_URGENCY_GEOGRAPHY}
 WHERE
     (occupation_field = $occupation_field
         OR $occupation_field = $label_all)
@@ -97,3 +100,13 @@ ORDER BY total_vacancies DESC;
         "label_all": _OPTION_LABEL_ALL,
     },
 )
+
+
+# -- create geopandas DF for map
+
+
+df_map_data = rel_map_data.df()
+
+gdf_base = gdf_region if selected_location_level == LOCATION_LEVEL_REGION else gdf_muni
+
+gdf_map = gdf_base.merge(df_map_data, on=LOCATION_KEY, how="left")
