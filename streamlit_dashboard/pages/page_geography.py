@@ -1,8 +1,11 @@
 from pathlib import Path
 
+import branca.colormap as colormap
+import folium
 import geopandas
 import streamlit as st
 from connect_data_warehouse import load_snowflake_to_duckdb
+from streamlit_folium import st_folium
 
 # -- constants
 
@@ -49,9 +52,6 @@ st.set_page_config(page_title="Geographic Analysis", page_icon="🗺️", layout
 # create cached in-memroy duckdb
 mart_tables = [MART_GEOGRAPHY, MART_URGENCY_GEOGRAPHY]
 con = load_snowflake_to_duckdb(mart_tables)
-
-rel_geo = con.table(MART_GEOGRAPHY)
-rel_urgency = con.table(MART_URGENCY_GEOGRAPHY)
 
 # load geojson to cached geopandas
 gdf_region = load_geopandas(GEOJSON_REGION_PATH, columns=[GEOJSON_REGION_KEY])
@@ -110,3 +110,37 @@ df_map_data = rel_map_data.df()
 gdf_base = gdf_region if selected_location_level == LOCATION_LEVEL_REGION else gdf_muni
 
 gdf_map = gdf_base.merge(df_map_data, on=LOCATION_KEY, how="left")
+
+
+# -- create folium map
+
+
+# create colormap
+min_val = gdf_map["total_vacancies"].fillna(0).min()
+max_val = gdf_map["total_vacancies"].fillna(0).max()
+
+colormap = colormap.LinearColormap(
+    vmin=min_val,
+    vmax=max_val,
+    colors={"white", "yellow", "red"},
+).to_step(n=8, method="log")
+
+# create folium map objects
+m = folium.Map(location=MAP_LOCATION)
+m.fit_bounds(MAP_BOUNDS)
+m.options["maxBounds"] = MAP_BOUNDS
+
+g = folium.GeoJson(
+    gdf_map,
+    style_function=lambda x: {
+        "fillColor": colormap(x["properties"]["total_vacancies"])
+        if x["properties"]["total_vacancies"] is not None
+        else "transparent",
+        "color": "black",
+        "fillOpacity": 0.5,
+        "stroke": True,
+        "weight": 0.1,
+    },
+).add_to(m)
+
+st_data = st_folium(m, width=725)
