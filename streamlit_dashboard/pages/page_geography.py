@@ -4,7 +4,6 @@ import geopandas
 import streamlit as st
 from connect_data_warehouse import load_snowflake_to_duckdb
 
-
 # -- constants
 
 
@@ -62,4 +61,39 @@ gdf_muni = gdf_muni.rename(columns={GEOJSON_MUNICIPALITY_KEY: LOCATION_KEY})
 # -- query datasets
 
 
-# ...
+selected_occupation_field = st.session_state.get(_FILTER_STATE_KEY, _OPTION_LABEL_ALL)
+selected_location_level = "region"
+selected_urgency_category = "urgent_7days"
+
+q = con.sql(
+    query=f"""
+SELECT
+    location_key as {LOCATION_KEY},
+    location_display_name,
+
+    SUM(total_vacancies) as total_vacancies,
+    SUM(total_job_ads) as total_job_ads,
+
+    $occupation_field AS occupation_field
+
+FROM mart_urgency_geography
+WHERE
+    (occupation_field = $occupation_field
+        OR $occupation_field = $label_all)
+
+    AND (location_level = $location_level
+        OR $location_level = $label_all)
+
+    AND (urgency_category = $urgency_category
+        OR $urgency_category = $label_all)
+
+GROUP BY 1, 2
+ORDER BY total_vacancies DESC;
+""",
+    params={
+        "occupation_field": selected_occupation_field,
+        "location_level": selected_location_level,
+        "urgency_category": selected_urgency_category,
+        "label_all": _OPTION_LABEL_ALL,
+    },
+)
