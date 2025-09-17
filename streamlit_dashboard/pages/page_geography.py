@@ -63,7 +63,7 @@ def load_geopandas(path, key_column) -> geopandas.GeoDataFrame:
 # -- setup page
 
 
-st.set_page_config(page_title="Geographic Analysis", page_icon="🗺️", layout="wide")
+st.set_page_config(page_title="Geographic Analysis", page_icon="🗺️")
 
 
 # -- cache datasets
@@ -84,13 +84,13 @@ selected_occupation_field = st.session_state.get(_FILTER_OCCUPATION_FIELD_KEY, _
 
 # local sidebar selectbox widgets
 selected_location_level = st.sidebar.selectbox(
-    label="Filter by location level",
+    label="Filter by **location level**",
     options=list(LOCATION_LEVEL_SELECTBOX_CONFIG.keys()),
     format_func=lambda key: LOCATION_LEVEL_SELECTBOX_CONFIG[key],
 )
 
 selected_urgency_category = st.sidebar.selectbox(
-    label="Filter by urgency",
+    label="Filter by **urgency**",
     options=list(URGENCY_CATGEGORIES_SELECTBOX_CONFIG.keys()),
     format_func=lambda key: URGENCY_CATGEGORIES_SELECTBOX_CONFIG[key],
 )
