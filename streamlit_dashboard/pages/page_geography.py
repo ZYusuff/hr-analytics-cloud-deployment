@@ -141,13 +141,10 @@ gdf_map = gdf_base.merge(df_map_data, on=LOCATION_KEY, how="left")
 
 
 # create colormap
-min_val = gdf_map["total_vacancies"].fillna(0).min()
-max_val = gdf_map["total_vacancies"].fillna(0).max()
-
-colormap = colormap.LinearColormap(
-    vmin=min_val,
-    vmax=max_val,
-    colors=["darkgreen", "green", "yellow", "orange", "red"],
+cmap_fill = colormap.LinearColormap(
+    vmin=0,
+    vmax=gdf_map["total_vacancies"].fillna(0).max(),
+    colors=["#2a9d8f", "#e9c46a", "#f4a261", "#e76f51"],
 ).to_step(n=15, method="log")
 
 # create folium map objects
@@ -156,7 +153,7 @@ m.fit_bounds(MAP_BOUNDS)
 m.options["maxBounds"] = MAP_BOUNDS
 
 tooltip = folium.GeoJsonTooltip(
-    fields=["LOCATION_DISPLAY_NAME", "total_vacancies"],
+    fields=["location_display_name", "total_vacancies"],
     aliases=["_Region_", "Vacancies:"],
     localize=True,
     sticky=False,
@@ -171,7 +168,7 @@ tooltip = folium.GeoJsonTooltip(
 )
 
 popup = folium.GeoJsonPopup(
-    fields=["LOCATION_DISPLAY_NAME", "total_job_ads"],
+    fields=["location_display_name", "total_job_ads"],
     aliases=["_Region_", "total job ads: "],
     localize=True,
     labels=True,
@@ -181,7 +178,7 @@ popup = folium.GeoJsonPopup(
 g = folium.GeoJson(
     gdf_map,
     style_function=lambda x: {
-        "fillColor": colormap(x["properties"]["total_vacancies"])
+        "fillColor": cmap_fill(x["properties"]["total_vacancies"])
         if x["properties"]["total_vacancies"] is not None
         else "transparent",
         "color": "black",
@@ -193,4 +190,6 @@ g = folium.GeoJson(
     popup=popup,
 ).add_to(m)
 
-st_data = st_folium(m, width=725)
+cmap_fill.add_to(m)
+
+st_folium(m, use_container_width=True)
