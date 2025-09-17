@@ -36,7 +36,6 @@ def query_job_listings(mart_table: str) -> DataFrame:
         return df
 
 
-@st.cache_resource
 def load_snowflake_to_duckdb(
     mart_tables: list[str],
     ddb_table_name_prefix: str | None = None,
