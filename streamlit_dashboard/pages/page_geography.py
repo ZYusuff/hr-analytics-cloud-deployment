@@ -24,12 +24,25 @@ MAP_BOUNDS = [[55.33, 10.93], [69.06, 24.17]]  # Sweden
 
 MART_GEOGRAPHY = "mart_geography"
 MART_URGENCY_GEOGRAPHY = "mart_urgency_geography"
+
 LOCATION_KEY = "LOCATION_KEY"
 
 LOCATION_LEVEL_REGION = "region"
 LOCATION_LEVEL_MUNICIPALITY = "municipality"
 
-_FILTER_STATE_KEY = "occupation_field_filter"
+LOCATION_LEVEL_SELECTBOX_CONFIG = {
+    LOCATION_LEVEL_REGION: "Region",
+    LOCATION_LEVEL_MUNICIPALITY: "Municipality",
+}
+
+URGENCY_CATGEGORIES_SELECTBOX_CONFIG = {
+    "urgent_7days": "7 days",
+    "closing_14days": "14 days",
+    "closing_30days": "30 days",
+    "normal": "Normal",
+}
+
+_FILTER_OCCUPATION_FIELD_KEY = "occupation_field_filter"
 _OPTION_LABEL_ALL = "All"
 
 # -- utils
@@ -66,10 +79,22 @@ gdf_muni = load_geopandas(GEOJSON_MUNICIPALITY_PATH, GEOJSON_MUNICIPALITY_KEY)
 
 # -- query datasets
 
+# global sidebar selectbox widget value
+selected_occupation_field = st.session_state.get(_FILTER_OCCUPATION_FIELD_KEY, _OPTION_LABEL_ALL)
 
-selected_occupation_field = st.session_state.get(_FILTER_STATE_KEY, _OPTION_LABEL_ALL)
-selected_location_level = LOCATION_LEVEL_REGION  # selectbox placeholder
-selected_urgency_category = "urgent_7days"  # selecctbox placeholder
+# local sidebar selectbox widgets
+selected_location_level = st.sidebar.selectbox(
+    label="Filter by location level",
+    options=list(LOCATION_LEVEL_SELECTBOX_CONFIG.keys()),
+    format_func=lambda key: LOCATION_LEVEL_SELECTBOX_CONFIG[key],
+)
+
+selected_urgency_category = st.sidebar.selectbox(
+    label="Filter by urgency",
+    options=list(URGENCY_CATGEGORIES_SELECTBOX_CONFIG.keys()),
+    format_func=lambda key: URGENCY_CATGEGORIES_SELECTBOX_CONFIG[key],
+)
+
 
 rel_map_data = con.sql(
     query=f"""
