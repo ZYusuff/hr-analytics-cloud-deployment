@@ -7,7 +7,7 @@ from connect_data_warehouse import query_job_listings
 
 # Set the title and a short description for this page in the Streamlit app
 st.title("🏢 Employer Analysis")
-st.write("Identify which employers have the highest demand for talent and discover new market entrants.")
+st.write("Identify which employers have the highest demand for talent across different occupations.")
 
 # Retrieve the selected occupation field from the session state
 selected_occupation_field = st.session_state.occupation_field_filter
@@ -24,23 +24,26 @@ else:
 # ==================================
 # KPI SECTION
 # ==================================
-# Create a row with two columns - one for the KPIs
-kpi_col1, kpi_col2 = st.columns([1, 1])
+# Create a row with one column for the KPI
+kpi_col1, _ = st.columns([1, 1])
 
 # Filter dataframes by level for different metrics
 df_field = df_employer_filtered[df_employer_filtered["LEVEL"] == "field"]
 
 # Get total employers count (unique employers) for the selected field
-unique_employers = df_field["TOTAL_EMPLOYER_COUNT"].max()
-
-# Get new employers count (those active within last 30 days)
-new_employers = df_field["NEW_EMPLOYER_COUNT"].max()
+# Since we've changed the calculation in the mart to count across all fields, 
+# we need to count unique employers in the filtered dataframe if a specific field is selected
+if selected_occupation_field != "All":
+    # Count unique employers only within the selected field
+    unique_employers = df_field["EMPLOYER_ID"].nunique()
+else:
+    # Use the precalculated total from the mart for all fields
+    unique_employers = df_field["TOTAL_EMPLOYER_COUNT"].max()
 
 # Format numbers with spaces as thousand separators
 formatted_unique = f"{unique_employers:,}".replace(",", " ")
-formatted_new = f"{new_employers:,}".replace(",", " ")
 
-# KPI 1: Total Unique Employers
+# KPI: Total Unique Employers
 with kpi_col1:
     st.markdown(f"""
     <div style="display: flex; align-items: center;">
@@ -55,26 +58,6 @@ with kpi_col1:
         <div style="margin-left: 30px;">
             <span style="font-size: 2.5rem; color: #0066b2; font-weight: bold;">
                 {formatted_unique}
-            </span>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-# KPI 2: New Employers
-with kpi_col2:
-    st.markdown(f"""
-    <div style="display: flex; align-items: center;">
-        <div>
-            <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0;">
-                New Employers
-            </div>
-            <div style="font-size: 1rem; color: #666; margin-top: 0;">
-                in the last 30 days
-            </div>
-        </div>
-        <div style="margin-left: 30px;">
-            <span style="font-size: 2.5rem; color: #0066b2; font-weight: bold;">
-                {formatted_new}
             </span>
         </div>
     </div>
@@ -151,22 +134,18 @@ if len(available_groups) > 0:
     all_group_employers = employers_in_group.sort_values("VACANCY_COUNT", ascending=False)
 
     # Create a table showing all employers within the selected group
-    employers_table = all_group_employers[["EMPLOYER_NAME", "VACANCY_COUNT", "IS_NEW_EMPLOYER"]].sort_values("VACANCY_COUNT", ascending=False)
+    employers_table = all_group_employers[["EMPLOYER_NAME", "VACANCY_COUNT"]].sort_values("VACANCY_COUNT", ascending=False)
     
-    # Add a column with "New" label for new employers
-    employers_table["STATUS"] = employers_table["IS_NEW_EMPLOYER"].apply(lambda x: "New Employer" if x == 1 else "")
-
     # Display the table with employers and their vacancy counts
     st.markdown(f"#### All Employers in {selected_group}")
     st.dataframe(
-        employers_table[["EMPLOYER_NAME", "VACANCY_COUNT", "STATUS"]],
+        employers_table,
         column_config={
             "EMPLOYER_NAME": "Employer",
             "VACANCY_COUNT": st.column_config.NumberColumn(
                 "Number of Vacancies",
                 format="%d",
-            ),
-            "STATUS": "Status"
+            )
         },
         hide_index=True,
         width='stretch'
