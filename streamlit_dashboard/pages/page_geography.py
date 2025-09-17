@@ -17,7 +17,7 @@ GEOJSON_REGION_PATH = ASSETS_PATH / "swedish_regions.geojson"
 GEOJSON_REGION_KEY = "ref:se:länskod"
 
 GEOJSON_MUNICIPALITY_PATH = ASSETS_PATH / "swedish_municipalities.geojson"
-GEOJSON_MUNICIPALITY_KEY = "lan_code"
+GEOJSON_MUNICIPALITY_KEY = "id"
 
 MAP_LOCATION = [59.3293, 18.0686]  # Stockholm
 MAP_BOUNDS = [[55.33, 10.93], [69.06, 24.17]]  # Sweden
