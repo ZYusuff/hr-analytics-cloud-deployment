@@ -75,12 +75,9 @@ rel_map_data = con.sql(
     query=f"""
 SELECT
     location_key as {LOCATION_KEY},
-    location_display_name,
-
+    ANY_VALUE(location_display_name) as location_display_name,
     SUM(total_vacancies) as total_vacancies,
     SUM(total_job_ads) as total_job_ads,
-
-    $occupation_field AS occupation_field
 
 FROM {MART_URGENCY_GEOGRAPHY}
 WHERE
@@ -93,7 +90,7 @@ WHERE
     AND (urgency_category = $urgency_category
         OR $urgency_category = $label_all)
 
-GROUP BY 1, 2
+GROUP BY location_key
 ORDER BY total_vacancies DESC;
 """,
     params={
