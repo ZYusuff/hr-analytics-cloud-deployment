@@ -150,6 +150,7 @@ st.markdown("### Drill Down into Specific Occupation Group")
 
 # Get unique occupation groups for the selected field
 available_groups = df_group["OCCUPATION_GROUP"].unique()
+available_groups = sorted(available_groups)  # Sort alphabetically
 selected_group = st.selectbox("Select an occupation group to explore", available_groups)
 
 # Create a table showing occupations within the selected group
@@ -234,6 +235,9 @@ trend_groups = df_trends_filtered[
     (df_trends_filtered["OCCUPATION_GROUP"].notna()) & 
     (df_trends_filtered["OCCUPATION_LABEL"].isna())
 ]["OCCUPATION_GROUP"].unique()
+
+# Sort the trend groups alphabetically
+trend_groups = sorted(trend_groups)
 
 if len(trend_groups) > 0:
     # Create a selectbox for group selection
