@@ -38,19 +38,7 @@ base AS (
     WHERE DATEDIFF('day', CURRENT_DATE(), ja.application_deadline) >= 0  -- Only consider active job ads
 ),
 
--- Calculate first publication date per employer (for new employer identification)
-employer_first_publication AS (
-    SELECT
-        employer_id,
-        MIN(publication_date) AS first_publication_date
-    FROM base
-    GROUP BY employer_id
-),
-
--- Identify new employers (those that first appeared in the last 30 days)
-current_date_info AS (
-    SELECT MAX(publication_date) AS latest_date FROM base
-),
+-- Base CTE for employer metrics calculations
 
 -- Aggregate by employer within occupation field
 employer_field_metrics AS (
@@ -61,19 +49,12 @@ employer_field_metrics AS (
         NULL AS occupation_group,
         SUM(b.vacancies) AS vacancy_count,
         COUNT(DISTINCT b.job_ad_id) AS job_ads_count,
-        CASE 
-            WHEN DATEDIFF('day', efp.first_publication_date, cd.latest_date) <= 30 THEN 1
-            ELSE 0
-        END AS is_new_employer
+        0 AS is_new_employer  -- Set to 0 as we're removing this feature
     FROM base b
-    JOIN employer_first_publication efp ON b.employer_id = efp.employer_id
-    CROSS JOIN current_date_info cd
     GROUP BY 
         b.employer_id, 
         b.employer_name, 
-        b.occupation_field, 
-        efp.first_publication_date,
-        cd.latest_date
+        b.occupation_field
 ),
 
 -- Aggregate by employer within occupation group
@@ -85,20 +66,13 @@ employer_group_metrics AS (
         b.occupation_group,
         SUM(b.vacancies) AS vacancy_count,
         COUNT(DISTINCT b.job_ad_id) AS job_ads_count,
-        CASE 
-            WHEN DATEDIFF('day', efp.first_publication_date, cd.latest_date) <= 30 THEN 1
-            ELSE 0
-        END AS is_new_employer
+        0 AS is_new_employer  -- Set to 0 as we're removing this feature
     FROM base b
-    JOIN employer_first_publication efp ON b.employer_id = efp.employer_id
-    CROSS JOIN current_date_info cd
     GROUP BY 
         b.employer_id, 
         b.employer_name, 
         b.occupation_field, 
-        b.occupation_group,
-        efp.first_publication_date,
-        cd.latest_date
+        b.occupation_group
 ),
 
 -- Combined hierarchical metrics
@@ -119,9 +93,9 @@ SELECT
     job_ads_count,
     is_new_employer,
     -- Count of total employers (for KPIs)
-    COUNT(*) OVER (PARTITION BY level, occupation_field) AS total_employer_count,
-    -- Count of new employers (for KPIs)
-    SUM(is_new_employer) OVER (PARTITION BY level, occupation_field) AS new_employer_count,
+    COUNT(*) OVER (PARTITION BY level) AS total_employer_count,
+    -- Count of new employers (for KPIs) - keeping for compatibility but will always be 0
+    SUM(is_new_employer) OVER (PARTITION BY level) AS new_employer_count,
     -- Rank within overall level
     ROW_NUMBER() OVER (
         PARTITION BY level 
