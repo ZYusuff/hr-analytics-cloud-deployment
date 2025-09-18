@@ -82,14 +82,13 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Create section header with title and toggle for top employers
-st.markdown('<div class="section-header"><h3>Top Employers:</h3></div>', unsafe_allow_html=True)
-employers_top_n = st.radio("Number of employers to display", [5, 10], horizontal=True, key="employers_toggle", label_visibility="hidden")
+# Create section header with title for top employers
+st.markdown('<div class="section-header"><h3>Top 10 Employers by Demand:</h3></div>', unsafe_allow_html=True)
 
-# Get top N employers by demand based on toggle selection
+# Get top 10 employers by demand
 # We're filtering by field level and using overall_rank to get top employers
 df_field_employers = df_employer_filtered[df_employer_filtered["LEVEL"] == "field"]
-top_employers = df_field_employers.sort_values("VACANCY_COUNT", ascending=False).head(employers_top_n)
+top_employers = df_field_employers.sort_values("VACANCY_COUNT", ascending=False).head(10)
 
 # Create horizontal bar chart for top employers
 fig_top_employers = px.bar(
@@ -98,7 +97,7 @@ fig_top_employers = px.bar(
     x="VACANCY_COUNT",
     color="OCCUPATION_FIELD",
     orientation="h",
-    title=f"Top {employers_top_n} Employers by Demand",
+    #title="Top 10 Employers by Demand",
     labels={"VACANCY_COUNT": "Number of Vacancies"},
     height=400
 )
