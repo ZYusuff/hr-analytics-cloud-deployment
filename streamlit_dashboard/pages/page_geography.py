@@ -36,15 +36,16 @@ LOCATION_LEVEL_SELECTBOX_CONFIG = {
     LOCATION_LEVEL_MUNICIPALITY: "Municipality",
 }
 
+_FILTER_OCCUPATION_FIELD_KEY = "occupation_field_filter"
+_OPTION_LABEL_ALL = "All"
+
 URGENCY_CATGEGORIES_SELECTBOX_CONFIG = {
+    _OPTION_LABEL_ALL: _OPTION_LABEL_ALL,
     "urgent_7days": "7 days",
     "closing_14days": "14 days",
     "closing_30days": "30 days",
-    "normal": "Normal",
+    "normal": "> 30 days",
 }
-
-_FILTER_OCCUPATION_FIELD_KEY = "occupation_field_filter"
-_OPTION_LABEL_ALL = "All"
 
 
 # -- utils
