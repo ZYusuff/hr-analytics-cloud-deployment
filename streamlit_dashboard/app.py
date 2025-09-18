@@ -14,7 +14,7 @@ pages = {
         st.Page("pages/page_demand.py", title="Demand Overview", icon="📈"),
         st.Page("pages/page_employer.py", title="Employer Overview", icon="🏢"),
         st.Page("pages/page_urgency.py", title="Application Urgency", icon="⏳"),
-        st.Page("pages/page_geography.py", title="Urgency by region", icon="🌍"),
+        st.Page("pages/page_geography.py", title="Urgency by Region", icon="🌍"),
         st.Page("pages/page_browser.py", title="Job Browser", icon="🔎"),
     ],
 }
@@ -37,7 +37,7 @@ available_occupation_fields = [item for (item,) in rel_occupation_fields.fetchal
 # -- sidebar selectbox filter
 
 st.sidebar.selectbox(
-    "Filter by **occupation field**",
+    "Filter by **Occupation field**",
     [
         _OPTION_LABEL_ALL,
         *available_occupation_fields,

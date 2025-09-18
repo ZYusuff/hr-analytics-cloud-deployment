@@ -9,9 +9,6 @@ from streamlit_folium import st_folium
 
 # -- constants
 
-st.title("📈 Urgency by region")
-st.write("This page shows urgency for applications by reqion")
-
 
 _PROJECT_ROOT = Path(__file__).parent.parent
 ASSETS_PATH = _PROJECT_ROOT / "assets"
@@ -39,15 +36,16 @@ LOCATION_LEVEL_SELECTBOX_CONFIG = {
     LOCATION_LEVEL_MUNICIPALITY: "Municipality",
 }
 
+_FILTER_OCCUPATION_FIELD_KEY = "occupation_field_filter"
+_OPTION_LABEL_ALL = "All"
+
 URGENCY_CATGEGORIES_SELECTBOX_CONFIG = {
+    _OPTION_LABEL_ALL: _OPTION_LABEL_ALL,
     "urgent_7days": "7 days",
     "closing_14days": "14 days",
     "closing_30days": "30 days",
-    "normal": "Normal",
+    "normal": "> 30 days",
 }
-
-_FILTER_OCCUPATION_FIELD_KEY = "occupation_field_filter"
-_OPTION_LABEL_ALL = "All"
 
 
 # -- utils
@@ -84,13 +82,13 @@ selected_occupation_field = st.session_state.get(_FILTER_OCCUPATION_FIELD_KEY, _
 
 # local sidebar selectbox widgets
 selected_location_level = st.sidebar.selectbox(
-    label="Filter by **location level**",
+    label="Filter by **Geographic level**",
     options=list(LOCATION_LEVEL_SELECTBOX_CONFIG.keys()),
     format_func=lambda key: LOCATION_LEVEL_SELECTBOX_CONFIG[key],
 )
 
 selected_urgency_category = st.sidebar.selectbox(
-    label="Filter by **urgency**",
+    label="Filter by **Deadline proximity**",
     options=list(URGENCY_CATGEGORIES_SELECTBOX_CONFIG.keys()),
     format_func=lambda key: URGENCY_CATGEGORIES_SELECTBOX_CONFIG[key],
 )
@@ -191,5 +189,8 @@ g = folium.GeoJson(
 cmap_fill.add_to(m)
 
 # display map
+st.title("📈 Urgency by region")
+st.write("This page shows urgency for applications by reqion")
+
 with st.container():
     st_folium(m, use_container_width=True)

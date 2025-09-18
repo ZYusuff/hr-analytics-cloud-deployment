@@ -1,6 +1,8 @@
 import streamlit as st
 from connect_data_warehouse import get_job_listings
 
+st.set_page_config(layout="centered")
+
 
 # Set the title and a short description for this page in the Streamlit app.
 st.title("📈Job browser")
@@ -10,15 +12,15 @@ st.write("This is where you can search and view full content of a specific ad.")
 # This value is set by a filter on another page (e.g., the main page).
 selected_occupation_field = st.session_state.occupation_field_filter
 
-# Display a confirmation message to the user showing which filter is currently active.
-st.write(f"Analyzing data for region: **{selected_occupation_field}**")
+# # Display a confirmation message to the user showing which filter is currently active.
+# st.write(f"Analyzing data for region: **{selected_occupation_field}**")
 
 # Query the data warehouse to get the 'mart_urgency' data mart.
 # This DataFrame contains all the data needed for our urgency analysis.
 df = get_job_listings("mart_job_browser")
 
-# Add a subheader for the raw data table.
-st.markdown("## Job listings data for selected occupation field: " + selected_occupation_field)
+# # Add a subheader for the raw data table.
+# st.markdown("## Job listings data for selected occupation field: " + selected_occupation_field)
 
 # Filter the DataFrame based on the user's selection.
 if selected_occupation_field != "All":
@@ -28,18 +30,18 @@ else:
     # If "All" is selected, use the entire, unfiltered DataFrame.
     display_df = df
 
-# Visa antal annonser som hittats
-st.markdown(f"**Antal annonser hittade:** {len(display_df)}")
+# # Visa antal annonser som hittats
+# st.markdown(f"**Antal annonser hittade:** {len(display_df)}")
 
-# Visa tabellen med bred layout
-st.dataframe(display_df, use_container_width=True)
+# # Visa tabellen med bred layout
+# st.dataframe(display_df, use_container_width=True)
 
 # Grupp och räkna antal annonser per region
 region_counts = display_df.groupby("WORKPLACE_REGION")["EMPLOYER_NAME"].count().sort_values(ascending=False)
 
-# Visa bar chart
-st.markdown("### Number of job ads per region")
-st.bar_chart(region_counts)
+# # Visa bar chart
+# st.markdown("### Number of job ads per region")
+# st.bar_chart(region_counts, horizontal=True)
 
 
 
@@ -76,14 +78,14 @@ if not filtered_df.empty:
     st.write(f"**Salary type:** {job['SALARY_TYPE']}")
     st.write(f"**Vacancies:** {job.get('VACANCIES','N/A')}")
 
+    st.markdown("### Requirements")
+    st.write(f"**Experience required:** {job['EXPERIENCE_REQUIRED']}")
+    st.write(f"**Driver’s license:** {job['DRIVER_LICENSE']}")
+    st.write(f"**Access to own car:** {job['ACCESS_TO_OWN_CAR']}")
+    st.write(f"**Must-have skills:** {job.get('MUST_HAVE_SKILLS','N/A')}")
+
     st.markdown("###  Description")
     st.write(job["DESCRIPTION"])
-
-    st.markdown("### Requirements")
-    st.write(f"- Experience required: {job['EXPERIENCE_REQUIRED']}")
-    st.write(f"- Driver’s license: {job['DRIVER_LICENSE']}")
-    st.write(f"- Access to own car: {job['ACCESS_TO_OWN_CAR']}")
-    st.write(f"- Must-have skills: {job.get('MUST_HAVE_SKILLS','N/A')}")
 else:
     st.info("No job ads found matching your search.")
 
