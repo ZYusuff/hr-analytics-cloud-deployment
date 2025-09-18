@@ -1,10 +1,5 @@
 import streamlit as st
-from pathlib import Path
-import sys
 from connect_data_warehouse import query_job_listings
-
-
-
 
 
 # Set the title and a short description for this page in the Streamlit app.
@@ -20,7 +15,7 @@ st.write(f"Analyzing data for region: **{selected_occupation_field}**")
 
 # Query the data warehouse to get the 'mart_urgency' data mart.
 # This DataFrame contains all the data needed for our urgency analysis.
-df = query_job_listings("mart_job_browser")
+df = get_job_listings("mart_job_browser")
 
 # Add a subheader for the raw data table.
 st.markdown("## Job listings data for selected occupation field: " + selected_occupation_field)
@@ -91,3 +86,4 @@ if not filtered_df.empty:
     st.write(f"- Must-have skills: {job.get('MUST_HAVE_SKILLS','N/A')}")
 else:
     st.info("No job ads found matching your search.")
+

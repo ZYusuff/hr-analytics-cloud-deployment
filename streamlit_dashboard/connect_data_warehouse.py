@@ -43,8 +43,8 @@ def get_job_listings(mart_table: str) -> DataFrame:
 
 def load_snowflake_to_duckdb(
     mart_tables: list[str],
-    ddb_table_name_prefix: str | None = None,
     schema: str | None = None,
+    ddb_table_name_prefix: str | None = None,
 ) -> duckdb.DuckDBPyConnection:
     """
     Loads specified Snowflake tables into a cached, in-memory DuckDB instance.
@@ -92,5 +92,9 @@ def load_snowflake_to_duckdb(
 
 
 @st.cache_resource
-def get_db_connection(mart_tables: list[str]):
-    return load_snowflake_to_duckdb(mart_tables)
+def get_db_connection(
+    mart_tables: list[str],
+    schema: str | None = None,
+    ddb_table_name_prefix: str | None = None,
+) -> duckdb.DuckDBPyConnection:
+    return load_snowflake_to_duckdb(mart_tables, ddb_table_name_prefix, schema)

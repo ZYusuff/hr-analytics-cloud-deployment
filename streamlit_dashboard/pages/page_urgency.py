@@ -1,6 +1,5 @@
 import streamlit as st
-from connect_data_warehouse import query_job_listings
-import pandas as pd
+from connect_data_warehouse import get_job_listings
 import altair as alt
 
 
@@ -8,16 +7,18 @@ st.title("📈 Application urgency")
 st.write("See which roles need urgent filling based on application deadlines.")
 
 # Hämta mart-data
-df = query_job_listings("marts.mart_urgency")
+df = get_job_listings("marts.mart_urgency")
 
 # Låt användaren välja occupation_field
-selected_occupation_field = st.selectbox(
-    "Select occupation field:",
-    sorted(df['OCCUPATION_FIELD'].unique())
-)
+selected_occupation_field = st.session_state.get("occupation_field_filter", "All")
 
-# Filtrera data
-filtered_df = df[df['OCCUPATION_FIELD'] == selected_occupation_field]
+# Filter the DataFrame based on the user's selection.
+if selected_occupation_field != "All":
+    # If a specific field is chosen, filter the DataFrame to only show rows matching it.
+    filtered_df = df[df["OCCUPATION_FIELD"] == selected_occupation_field]
+else:
+    # If "All" is selected, use the entire, unfiltered DataFrame.
+    filtered_df = df
 
 # KPI:er
 total_job_ads = int(filtered_df['TOTAL_JOB_ADS'].sum())

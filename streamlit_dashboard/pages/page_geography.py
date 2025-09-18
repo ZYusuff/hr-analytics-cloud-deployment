@@ -24,7 +24,7 @@ MAP_BOUNDS = [[55.33, 10.93], [69.06, 24.17]]  # Sweden
 
 MART_GEOGRAPHY = "mart_geography"
 MART_URGENCY_GEOGRAPHY = "mart_urgency_geography"
-LOAD_TABLES = [MART_GEOGRAPHY]  # Tables to load into DuckDB
+LOAD_TABLES = [MART_URGENCY_GEOGRAPHY]  # Tables to load into DuckDB
 
 LOCATION_KEY = "LOCATION_KEY"
 

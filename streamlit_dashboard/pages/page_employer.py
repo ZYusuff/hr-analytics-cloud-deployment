@@ -1,9 +1,6 @@
 import streamlit as st
-import pandas as pd
 import plotly.express as px
-import plotly.graph_objects as go
-from datetime import datetime, timedelta
-from connect_data_warehouse import query_job_listings
+from connect_data_warehouse import get_job_listings
 
 # Set the title and a short description for this page in the Streamlit app
 st.title("🏢 Employer Analysis")
@@ -13,7 +10,7 @@ st.write("Identify which employers have the highest demand for talent across dif
 selected_occupation_field = st.session_state.occupation_field_filter
 
 # Query the data warehouse to get the 'mart_employer_demand' data mart
-df_employer = query_job_listings("mart_employer_demand")
+df_employer = get_job_listings("mart_employer_demand")
 
 # Filter data based on occupation field selection
 if selected_occupation_field != "All":
