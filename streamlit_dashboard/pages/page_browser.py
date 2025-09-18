@@ -1,5 +1,5 @@
 import streamlit as st
-from connect_data_warehouse import query_job_listings
+from connect_data_warehouse import get_job_listings
 
 
 # Set the title and a short description for this page in the Streamlit app.
