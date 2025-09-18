@@ -36,6 +36,11 @@ def query_job_listings(mart_table: str) -> DataFrame:
         return df
 
 
+@st.cache_data
+def get_job_listings(mart_table: str) -> DataFrame:
+    return query_job_listings(mart_table)
+
+
 def load_snowflake_to_duckdb(
     mart_tables: list[str],
     ddb_table_name_prefix: str | None = None,
@@ -86,3 +91,6 @@ def load_snowflake_to_duckdb(
     return duck_conn
 
 
+@st.cache_resource
+def get_db_connection(mart_tables: list[str]):
+    return load_snowflake_to_duckdb(mart_tables)
