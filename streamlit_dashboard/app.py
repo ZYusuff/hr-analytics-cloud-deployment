@@ -1,6 +1,8 @@
 import streamlit as st
 
-st.set_page_config(page_title="Main Dashboard", page_icon="📊", layout="wide")
+_OPTION_LABEL_ALL = "All"  # for use with widgets
+
+st.set_page_config(page_title="Jobsearch Dashboard", page_icon="📊", layout="wide")
 
 pages = {
     "Home": [st.Page("pages/homepage.py", title="Home", icon="🏠")],
@@ -16,7 +18,7 @@ pages = {
 st.sidebar.selectbox(
     "Filter by **occupation field**",
     [
-        "All",
+        _OPTION_LABEL_ALL,
         "Hälso- och sjukvård",
     ],
     key="occupation_field_filter",
