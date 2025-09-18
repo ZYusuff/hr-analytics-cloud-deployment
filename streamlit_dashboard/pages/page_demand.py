@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 import plotly.express as px
 from connect_data_warehouse import get_job_listings
 
@@ -9,19 +10,20 @@ st.write("Analyze occupation demand trends and see which occupations are most in
 # Retrieve the selected occupation field from the session state
 selected_occupation_field = st.session_state.occupation_field_filter
 
-# Query the data warehouse to get the 'mart_occupation_demand' data mart
+# Query the data warehouse to get the data marts
 df_demand = get_job_listings("mart_occupation_demand")
-
-# Query the data warehouse to get the 'mart_trends' data mart
 df_trends = get_job_listings("mart_trends")
+df_requirements = get_job_listings("mart_occupation_requirements")
 
 # Filter data based on occupation field selection
 if selected_occupation_field != "All":
     df_demand_filtered = df_demand[df_demand["OCCUPATION_FIELD"] == selected_occupation_field]
     df_trends_filtered = df_trends[df_trends["OCCUPATION_FIELD"] == selected_occupation_field]
+    df_requirements_filtered = df_requirements[df_requirements["OCCUPATION_FIELD"] == selected_occupation_field]
 else:
     df_demand_filtered = df_demand
     df_trends_filtered = df_trends
+    df_requirements_filtered = df_requirements
 
 # ==================================
 # KPI SECTION
@@ -154,20 +156,87 @@ selected_group = st.selectbox("Select an occupation group to explore", available
 occupations_in_group = df_occupation[df_occupation["OCCUPATION_GROUP"] == selected_group]
 occupations_table = occupations_in_group[["OCCUPATION_LABEL", "VACANCY_COUNT"]].sort_values("VACANCY_COUNT", ascending=False)
 
-# Display the table with occupations and their vacancy counts
-st.markdown(f"#### Occupations within {selected_group}")
-st.dataframe(
-    occupations_table,
-    column_config={
-        "OCCUPATION_LABEL": "Occupation",
-        "VACANCY_COUNT": st.column_config.NumberColumn(
-            "Number of Vacancies",
-            format="%d",
-        )
-    },
-    hide_index=True,
-    width='stretch'
-)
+# Get requirements data for the selected group
+requirements_group = df_requirements_filtered[
+    (df_requirements_filtered["LEVEL"] == "group") & 
+    (df_requirements_filtered["OCCUPATION_GROUP"] == selected_group)
+]
+
+requirements_occupations = df_requirements_filtered[
+    (df_requirements_filtered["LEVEL"] == "occupation") & 
+    (df_requirements_filtered["OCCUPATION_GROUP"] == selected_group)
+]
+
+# Merge demand and requirements data for occupations
+if not requirements_occupations.empty:
+    merged_data = pd.merge(
+        occupations_table,
+        requirements_occupations[["OCCUPATION_LABEL", "EXPERIENCE_REQUIRED_PERCENTAGE", 
+                                "DRIVER_LICENSE_PERCENTAGE", "OWN_CAR_PERCENTAGE"]],
+        on="OCCUPATION_LABEL",
+        how="left"
+    )
+    
+    # Display the table with occupations and their vacancy counts and requirements
+    st.markdown(f"#### Occupations within {selected_group}")
+    
+    # Format merged data
+    st.dataframe(
+        merged_data,
+        column_config={
+            "OCCUPATION_LABEL": "Occupation",
+            "VACANCY_COUNT": st.column_config.NumberColumn(
+                "Number of Vacancies",
+                format="%d",
+            ),
+            "EXPERIENCE_REQUIRED_PERCENTAGE": st.column_config.NumberColumn(
+                "% Requiring Experience",
+                format="%.1f%%",
+            ),
+            "DRIVER_LICENSE_PERCENTAGE": st.column_config.NumberColumn(
+                "% Requiring Driver's License",
+                format="%.1f%%",
+            ),
+            "OWN_CAR_PERCENTAGE": st.column_config.NumberColumn(
+                "% Requiring Car",
+                format="%.1f%%",
+            )
+        },
+        hide_index=True,
+        width='stretch'
+    )
+    
+    # Display a summary of requirements for the selected group
+    if not requirements_group.empty:
+        st.markdown(f"#### Overall Requirements for {selected_group}")
+        col1, col2, col3 = st.columns(3)
+        
+        # Extract the percentages (there should be just one row for the selected group)
+        exp_pct = requirements_group["EXPERIENCE_REQUIRED_PERCENTAGE"].iloc[0]
+        lic_pct = requirements_group["DRIVER_LICENSE_PERCENTAGE"].iloc[0]
+        car_pct = requirements_group["OWN_CAR_PERCENTAGE"].iloc[0]
+        
+        with col1:
+            st.metric("Experience Required", f"{exp_pct:.1f}%")
+        with col2:
+            st.metric("Driver's License Required", f"{lic_pct:.1f}%")
+        with col3:
+            st.metric("Own Car Required", f"{car_pct:.1f}%")
+else:
+    # Display the original table if no requirements data is available
+    st.markdown(f"#### Occupations within {selected_group}")
+    st.dataframe(
+        occupations_table,
+        column_config={
+            "OCCUPATION_LABEL": "Occupation",
+            "VACANCY_COUNT": st.column_config.NumberColumn(
+                "Number of Vacancies",
+                format="%d",
+            )
+        },
+        hide_index=True,
+        width='stretch'
+    )
 
 # Add vertical spacing between sections
 st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
