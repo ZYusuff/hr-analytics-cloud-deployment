@@ -1,4 +1,5 @@
 import os
+
 import duckdb
 import snowflake.connector
 from dotenv import load_dotenv
@@ -71,7 +72,3 @@ def create_job_listings_db(
     print(f"Successfully registered {tbl_mart.num_rows} rows into DuckDB as table '{duckdb_table_name}'.")
 
     return duck_conn
-
-if __name__ == "__main__":
-    df = query_job_listings("marts.job_listings")
-    print(df.head())  # Visa de första raderna
