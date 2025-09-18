@@ -24,10 +24,24 @@ else:
 total_job_ads = int(filtered_df['TOTAL_JOB_ADS'].sum())
 total_vacancies = int(filtered_df['TOTAL_VACANCIES'].sum())
 
-st.subheader("📊 Key Metrics")
+st.subheader(" Key Metrics")
 col1, col2 = st.columns(2)
-col1.metric("Total job ads", f"{total_job_ads:,}")
-col2.metric("Total vacancies", f"{total_vacancies:,}")
+
+# Visa Key Metrics med anpassad färg och utan komma
+col1.markdown(f"""
+<div style="text-align: center;">
+    <div style="font-size: 1.5rem; font-weight: bold; color: #0066b2;">{total_job_ads}</div>
+    <div style="font-size: 1rem; color: #666;">Total Job Ads</div>
+</div>
+""", unsafe_allow_html=True)
+
+col2.markdown(f"""
+<div style="text-align: center;">
+    <div style="font-size: 1.5rem; font-weight: bold; color: #0066b2;">{total_vacancies}</div>
+    <div style="font-size: 1rem; color: #666;">Total Vacancies</div>
+</div>
+""", unsafe_allow_html=True)
+
 
 # Grupp och summera per urgency category
 urgency_table = (
