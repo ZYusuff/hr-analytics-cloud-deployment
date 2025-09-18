@@ -4,7 +4,7 @@ import altair as alt
 
 
 st.title("📈 Application urgency")
-st.write("See which roles need urgent filling based on application deadlines.")
+st.write("This page shows which roles need urgent filling based on application deadlines.")
 
 # Hämta mart-data
 df = get_job_listings("marts.mart_urgency")
@@ -48,7 +48,7 @@ urgency_table["URGENCY_CATEGORY"] = urgency_table["URGENCY_CATEGORY"].replace({
 urgency_table = urgency_table.sort_values("TOTAL_VACANCIES", ascending=False)
 
 # Visa tabellen
-st.subheader("📋 Distribution by urgency category")
+st.subheader(" Distribution by urgency category")
 st.dataframe(
     urgency_table.style.format({"TOTAL_JOB_ADS": "{:,}", "TOTAL_VACANCIES": "{:,}"})
 )

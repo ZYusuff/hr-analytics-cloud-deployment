@@ -9,6 +9,9 @@ from streamlit_folium import st_folium
 
 # -- constants
 
+st.title("📈 Urgency by region")
+st.write("This page shows urgency for applications by reqion")
+
 
 _PROJECT_ROOT = Path(__file__).parent.parent
 ASSETS_PATH = _PROJECT_ROOT / "assets"
