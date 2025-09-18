@@ -153,11 +153,3 @@ if len(available_groups) > 0:
 else:
     st.write("No occupation groups available for the selected field.")
 
-
-# ==================================
-# RAW DATA SECTION
-# ==================================
-# Add an expander for raw data
-with st.expander("View Raw Data"):
-    st.markdown(f"## Raw data for selected occupation field: {selected_occupation_field}")
-    st.dataframe(df_employer_filtered, width='stretch')
