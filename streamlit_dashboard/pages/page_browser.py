@@ -1,8 +1,5 @@
 import streamlit as st
-from connect_data_warehouse import get_job_listings
-
-
-
+from connect_data_warehouse import query_job_listings
 
 
 # Set the title and a short description for this page in the Streamlit app.
@@ -89,3 +86,4 @@ if not filtered_df.empty:
     st.write(f"- Must-have skills: {job.get('MUST_HAVE_SKILLS','N/A')}")
 else:
     st.info("No job ads found matching your search.")
+
