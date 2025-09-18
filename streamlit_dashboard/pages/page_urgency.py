@@ -1,6 +1,5 @@
 import streamlit as st
-from connect_data_warehouse import query_job_listings
-import pandas as pd
+from connect_data_warehouse import get_job_listings
 import altair as alt
 
 
@@ -8,7 +7,7 @@ st.title("📈 Application urgency")
 st.write("See which roles need urgent filling based on application deadlines.")
 
 # Hämta mart-data
-df = query_job_listings("marts.mart_urgency")
+df = get_job_listings("marts.mart_urgency")
 
 # Låt användaren välja occupation_field
 selected_occupation_field = st.selectbox(

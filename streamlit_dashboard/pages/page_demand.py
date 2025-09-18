@@ -1,9 +1,6 @@
 import streamlit as st
-import pandas as pd
 import plotly.express as px
-import plotly.graph_objects as go
-from datetime import datetime, timedelta
-from connect_data_warehouse import query_job_listings
+from connect_data_warehouse import get_job_listings
 
 # Set the title and a short description for this page in the Streamlit app
 st.title("📈 Demand overview")
@@ -13,10 +10,10 @@ st.write("Analyze occupation demand trends and see which occupations are most in
 selected_occupation_field = st.session_state.occupation_field_filter
 
 # Query the data warehouse to get the 'mart_occupation_demand' data mart
-df_demand = query_job_listings("mart_occupation_demand")
+df_demand = get_job_listings("mart_occupation_demand")
 
 # Query the data warehouse to get the 'mart_trends' data mart
-df_trends = query_job_listings("mart_trends")
+df_trends = get_job_listings("mart_trends")
 
 # Filter data based on occupation field selection
 if selected_occupation_field != "All":
