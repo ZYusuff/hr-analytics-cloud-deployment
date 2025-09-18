@@ -4,7 +4,7 @@ import branca.colormap as colormap
 import folium
 import geopandas
 import streamlit as st
-from connect_data_warehouse import load_snowflake_to_duckdb
+from connect_data_warehouse import get_db_connection
 from streamlit_folium import st_folium
 
 # -- constants
@@ -24,6 +24,7 @@ MAP_BOUNDS = [[55.33, 10.93], [69.06, 24.17]]  # Sweden
 
 MART_GEOGRAPHY = "mart_geography"
 MART_URGENCY_GEOGRAPHY = "mart_urgency_geography"
+LOAD_TABLES = [MART_GEOGRAPHY]  # Tables to load into DuckDB
 
 LOCATION_KEY = "LOCATION_KEY"
 
@@ -45,13 +46,8 @@ URGENCY_CATGEGORIES_SELECTBOX_CONFIG = {
 _FILTER_OCCUPATION_FIELD_KEY = "occupation_field_filter"
 _OPTION_LABEL_ALL = "All"
 
+
 # -- utils
-
-
-@st.cache_resource
-def get_db_connection():
-    mart_tables = [MART_URGENCY_GEOGRAPHY]
-    return load_snowflake_to_duckdb(mart_tables)
 
 
 @st.cache_data
@@ -70,14 +66,15 @@ st.set_page_config(page_title="Geographic Analysis", page_icon="🗺️")
 
 
 # create cached in-memroy duckdb
-con = get_db_connection()
+con = get_db_connection(LOAD_TABLES)
 
 # load geojson to cached geopandas
 gdf_region = load_geopandas(GEOJSON_REGION_PATH, GEOJSON_REGION_KEY)
 gdf_muni = load_geopandas(GEOJSON_MUNICIPALITY_PATH, GEOJSON_MUNICIPALITY_KEY)
 
 
-# -- query datasets
+# -- sidebar filtering widgets
+
 
 # global sidebar selectbox widget value
 selected_occupation_field = st.session_state.get(_FILTER_OCCUPATION_FIELD_KEY, _OPTION_LABEL_ALL)
@@ -94,6 +91,9 @@ selected_urgency_category = st.sidebar.selectbox(
     options=list(URGENCY_CATGEGORIES_SELECTBOX_CONFIG.keys()),
     format_func=lambda key: URGENCY_CATGEGORIES_SELECTBOX_CONFIG[key],
 )
+
+
+# -- query datasets
 
 
 rel_map_data = con.sql(
@@ -187,5 +187,6 @@ g = folium.GeoJson(
 
 cmap_fill.add_to(m)
 
+# display map
 with st.container():
     st_folium(m, use_container_width=True)
