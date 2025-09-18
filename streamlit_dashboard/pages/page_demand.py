@@ -84,12 +84,11 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Create section header with title and toggle
-st.markdown('<div class="section-header"><h3>Top Occupation Groups:</h3></div>', unsafe_allow_html=True)
-groups_top_n = st.radio("Number of groups to display", [5, 10], horizontal=True, key="groups_toggle", label_visibility="hidden")
+# Create section header with title
+st.markdown('<div class="section-header"><h3>Top 10 Occupation Groups:</h3></div>', unsafe_allow_html=True)
 
-# Get top N occupation groups by demand based on toggle selection
-top_groups = df_group.sort_values("VACANCY_COUNT", ascending=False).head(groups_top_n)
+# Get top 10 occupation groups by demand
+top_groups = df_group.sort_values("VACANCY_COUNT", ascending=False).head(10)
 
 # Create horizontal bar chart for top occupation groups
 fig_top_groups = px.bar(
@@ -98,7 +97,7 @@ fig_top_groups = px.bar(
     x="VACANCY_COUNT",
     color="OCCUPATION_FIELD",
     orientation="h",
-    title=f"Top {groups_top_n} Groups by Demand",
+    #title="Top 10 Groups by Demand",
     labels={"VACANCY_COUNT": "Number of Vacancies"},
     height=400
 )
@@ -112,12 +111,11 @@ fig_top_groups.update_layout(
 )
 st.plotly_chart(fig_top_groups, width='stretch')
 
-# Create section header with title and toggle for occupations
-st.markdown('<div class="section-header"><h3>Top Occupations:</h3></div>', unsafe_allow_html=True)
-occupations_top_n = st.radio("Number of occupations to display", [5, 10], horizontal=True, key="occupations_toggle", label_visibility="hidden")
+# Create section header with title for occupations
+st.markdown('<div class="section-header"><h3>Top 10 Occupations:</h3></div>', unsafe_allow_html=True)
 
-# Get top N occupations by demand based on toggle selection
-top_occupations = df_occupation.sort_values("VACANCY_COUNT", ascending=False).head(occupations_top_n)
+# Get top 10 occupations by demand
+top_occupations = df_occupation.sort_values("VACANCY_COUNT", ascending=False).head(10)
 
 # Create horizontal bar chart for top occupations
 fig_top_occupations = px.bar(
@@ -126,7 +124,7 @@ fig_top_occupations = px.bar(
     x="VACANCY_COUNT",
     color="OCCUPATION_GROUP",
     orientation="h",
-    title=f"Top {occupations_top_n} Occupations by Demand",
+    #title="Top 10 Occupations by Demand",
     labels={"VACANCY_COUNT": "Number of Vacancies"},
     height=400
 )
