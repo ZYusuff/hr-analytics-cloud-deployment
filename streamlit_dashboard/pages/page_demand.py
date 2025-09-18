@@ -15,11 +15,16 @@ selected_occupation_field = st.session_state.occupation_field_filter
 # Query the data warehouse to get the 'mart_occupation_demand' data mart
 df_demand = query_job_listings("mart_occupation_demand")
 
+# Query the data warehouse to get the 'mart_trends' data mart
+df_trends = query_job_listings("mart_trends")
+
 # Filter data based on occupation field selection
 if selected_occupation_field != "All":
     df_demand_filtered = df_demand[df_demand["OCCUPATION_FIELD"] == selected_occupation_field]
+    df_trends_filtered = df_trends[df_trends["OCCUPATION_FIELD"] == selected_occupation_field]
 else:
     df_demand_filtered = df_demand
+    df_trends_filtered = df_trends
 
 # ==================================
 # KPI SECTION
@@ -145,6 +150,7 @@ st.markdown("### Drill Down into Specific Occupation Group")
 
 # Get unique occupation groups for the selected field
 available_groups = df_group["OCCUPATION_GROUP"].unique()
+available_groups = sorted(available_groups)  # Sort alphabetically
 selected_group = st.selectbox("Select an occupation group to explore", available_groups)
 
 # Create a table showing occupations within the selected group
@@ -166,11 +172,128 @@ st.dataframe(
     width='stretch'
 )
 
+# Add vertical spacing between sections
+st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
+
+# ==================================
+# TRENDS VISUALIZATION SECTION
+# ==================================
+
+st.markdown("## 📊 Vacancy Trends Over Time")
+st.write("Analyze how job vacancies have changed over time")
+
+# Create a section for field-level trends
+st.markdown(f"### Trends for {selected_occupation_field if selected_occupation_field != 'All' else 'All Fields'}")
+
+# Filter the trends data for field level with daily granularity
+field_trends = df_trends_filtered[
+    (df_trends_filtered["TIME_GRANULARITY"] == "daily") & 
+    (df_trends_filtered["OCCUPATION_GROUP"].isna()) & 
+    (df_trends_filtered["OCCUPATION_LABEL"].isna())
+]
+
+# Sort the data by trend_date to ensure proper time series display
+field_trends = field_trends.sort_values("TREND_DATE")
+
+# Create the line chart for field-level trends
+if not field_trends.empty:
+    fig_field_trends = px.line(
+        field_trends,
+        x="TREND_DATE",
+        y="VACANCIES",
+        color="OCCUPATION_FIELD" if selected_occupation_field == "All" else None,
+        title=f"Vacancy Trends for {selected_occupation_field if selected_occupation_field != 'All' else 'All Fields'}",
+        labels={
+            "TREND_DATE": "Publication Date",
+            "VACANCIES": "Number of Vacancies"
+        },
+        height=400
+    )
+    
+    # Improve the layout and add markers for better visibility
+    fig_field_trends.update_traces(mode='lines+markers', marker=dict(size=6))
+    fig_field_trends.update_layout(
+        xaxis_title="Publication Date",
+        yaxis_title="Number of Vacancies",
+        margin=dict(l=20, r=20, t=40, b=20),
+        hovermode="x unified"  # Show all values for the same x coordinate
+    )
+    
+    st.plotly_chart(fig_field_trends, use_container_width=True)
+else:
+    st.info(f"No trend data available for {selected_occupation_field}. Please select a different occupation field.")
+
+# Add a separator
+st.markdown("<hr style='margin-top: 1.5rem; margin-bottom: 1.5rem;'>", unsafe_allow_html=True)
+
+# Create a section for group-level trends
+st.markdown("### Group-Level Trends")
+st.write("Select a specific occupation group to see its vacancy trends over time")
+
+# Get unique occupation groups from the filtered trends data
+trend_groups = df_trends_filtered[
+    (df_trends_filtered["OCCUPATION_GROUP"].notna()) & 
+    (df_trends_filtered["OCCUPATION_LABEL"].isna())
+]["OCCUPATION_GROUP"].unique()
+
+# Sort the trend groups alphabetically
+trend_groups = sorted(trend_groups)
+
+if len(trend_groups) > 0:
+    # Create a selectbox for group selection
+    selected_trend_group = st.selectbox(
+        "Select an occupation group",
+        trend_groups,
+        key="trend_group_selector"
+    )
+
+    # Filter the trends data for the selected group with daily granularity
+    group_trends = df_trends_filtered[
+        (df_trends_filtered["TIME_GRANULARITY"] == "daily") & 
+        (df_trends_filtered["OCCUPATION_GROUP"] == selected_trend_group) & 
+        (df_trends_filtered["OCCUPATION_LABEL"].isna())
+    ]
+
+    # Sort the data by trend_date to ensure proper time series display
+    group_trends = group_trends.sort_values("TREND_DATE")
+
+    # Create the line chart for group-level trends
+    if not group_trends.empty:
+        fig_group_trends = px.line(
+            group_trends,
+            x="TREND_DATE",
+            y="VACANCIES",
+            title=f"Vacancy Trends for {selected_trend_group}",
+            labels={
+                "TREND_DATE": "Publication Date",
+                "VACANCIES": "Number of Vacancies"
+            },
+            height=400
+        )
+        
+        # Improve the layout and add markers for better visibility
+        fig_group_trends.update_traces(mode='lines+markers', marker=dict(size=6))
+        fig_group_trends.update_layout(
+            xaxis_title="Publication Date",
+            yaxis_title="Number of Vacancies",
+            margin=dict(l=20, r=20, t=40, b=20),
+            hovermode="x unified"  # Show all values for the same x coordinate
+        )
+        
+        st.plotly_chart(fig_group_trends, use_container_width=True)
+    else:
+        st.info(f"No trend data available for {selected_trend_group}.")
+else:
+    st.warning(f"No occupation groups available for {selected_occupation_field}. Please select a different occupation field.")
+
+# Add vertical spacing between sections
+st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
+
 
 # ==================================
 # RAW DATA SECTION
 # ==================================
 # Add an expander for raw data
-with st.expander("View Raw Data"):
-    st.markdown(f"## Raw data for selected occupation field: {selected_occupation_field}")
-    st.dataframe(df_demand_filtered, width='stretch')
+#with st.expander("View Raw Data"):
+#    st.markdown(f"## Raw data for selected occupation field: {selected_occupation_field}")
+#    st.dataframe(df_demand_filtered, width='stretch')
