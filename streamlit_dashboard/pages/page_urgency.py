@@ -26,8 +26,8 @@ total_vacancies = int(filtered_df['TOTAL_VACANCIES'].sum())
 
 st.subheader("📊 Key Metrics")
 col1, col2 = st.columns(2)
-col1.metric("Total Job Ads", f"{total_job_ads:,}")
-col2.metric("Total Vacancies", f"{total_vacancies:,}")
+col1.metric("Total job ads", f"{total_job_ads:,}")
+col2.metric("Total vacancies", f"{total_vacancies:,}")
 
 # Grupp och summera per urgency category
 urgency_table = (
@@ -44,33 +44,62 @@ urgency_table["URGENCY_CATEGORY"] = urgency_table["URGENCY_CATEGORY"].replace({
     "normal": "Normal"
 })
 
-# Sortera på antal vakanser
-urgency_table = urgency_table.sort_values("TOTAL_VACANCIES", ascending=False)
+# Skapa en mapping för snygga rubriker
+column_labels = {
+    "URGENCY_CATEGORY": "Urgency Category",
+    "TOTAL_JOB_ADS": "Total Job Ads",
+    "TOTAL_VACANCIES": "Total Vacancies"
+}
+
+# Byt namn på kolumnerna med .rename
+urgency_table_display = urgency_table.rename(columns=column_labels)
 
 # Visa tabellen
-st.subheader(" Distribution by urgency category")
+st.subheader("Distribution by urgency category")
 st.dataframe(
-    urgency_table.style.format({"TOTAL_JOB_ADS": "{:,}", "TOTAL_VACANCIES": "{:,}"})
+    urgency_table_display.style.format({
+        "Total Job Ads": "{:,}", 
+        "Total Vacancies": "{:,}"
+    })
 )
 
-# Låt användaren välja metrik
-metric = st.radio(
+
+# Mapping mellan tekniska kolumnnamn och labels
+metric_labels = {
+    "TOTAL_JOB_ADS": "Total Job Ads",
+    "TOTAL_VACANCIES": "Total Vacancies"
+}
+
+# Låt användaren välja metrik (visa snygga labels)
+metric_label = st.radio(
     "Select metric to visualize:",
-    options=["TOTAL_JOB_ADS", "TOTAL_VACANCIES"],
+    options=list(metric_labels.values()),
     index=1,
     horizontal=True
 )
 
+# Konvertera tillbaka till det "riktiga" kolumnnamnet
+metric = [k for k, v in metric_labels.items() if v == metric_label][0]
+
+
 # Skapa interaktivt diagram
+# Skapa horisontellt stapeldiagram
 chart = (
     alt.Chart(urgency_table)
     .mark_bar()
     .encode(
-        x=alt.X("URGENCY_CATEGORY:N", sort="-y", title="Urgency Category"),
-        y=alt.Y(f"{metric}:Q", title=metric.replace("_", " ").title()),
-        tooltip=["URGENCY_CATEGORY", "TOTAL_JOB_ADS", "TOTAL_VACANCIES"]
+        y=alt.Y("URGENCY_CATEGORY:N", sort='-x', title="Urgency Category"),
+        x=alt.X(f"{metric}:Q", title=metric.replace("_", " ").title()),
+        tooltip=["URGENCY_CATEGORY", "TOTAL_JOB_ADS", "TOTAL_VACANCIES"],
+        color=alt.Color("URGENCY_CATEGORY:N", legend=None)  # liknar plotly färgkodning
     )
-    .properties(width=600, height=400)
+    .properties(
+        title=f"Urgency Categories by {metric.replace('_', ' ').title()}",
+        width=600,
+        height=400
+    )
 )
+
 st.altair_chart(chart, use_container_width=True)
+
 
