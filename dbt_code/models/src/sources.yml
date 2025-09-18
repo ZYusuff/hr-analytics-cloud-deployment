@@ -4,3 +4,5 @@ sources:
     tables:
       - name: stg_ads
         identifier: technical_field_job_ads
+      - name: stg_coords
+        identifier: technical_field_job_ads__workplace_address__coordinates

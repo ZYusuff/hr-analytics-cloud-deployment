@@ -3,6 +3,7 @@ from connect_data_warehouse import query_job_listings
 import pandas as pd
 import altair as alt
 
+
 def show():
     st.title("📈 Application urgency")
     st.write("See which roles need urgent filling based on application deadlines.")
@@ -76,3 +77,5 @@ def show():
     # Raw data
     st.markdown(f"### 📂 Raw data for {selected_occupation_field}")
     st.dataframe(filtered_df)
+
+

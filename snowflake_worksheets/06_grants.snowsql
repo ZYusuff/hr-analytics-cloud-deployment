@@ -44,11 +44,15 @@ grant usage on database job_ads to role analytics_reader;
 grant usage on schema warehouse to role analytics_reader;
 grant select on all tables in schema warehouse to role analytics_reader;
 grant select on future tables in schema warehouse to role analytics_reader;
+grant select on all views in schema warehouse to role analytics_reader;
+grant select on future views in schema warehouse to role analytics_reader;
 
 --
 grant usage on schema marts to role analytics_reader;
 grant select on all tables in schema marts to role analytics_reader;
 grant select on future tables in schema marts to role analytics_reader;
+grant select on all views in schema marts to role analytics_reader;
+grant select on future views in schema marts to role analytics_reader;
 
 --
 show grants to role pipeline_operator;

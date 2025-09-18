@@ -5,7 +5,7 @@ use role accountadmin;
 drop user if exists anon_engineer;
 drop user if exists svc_dlt_ingestion;
 drop user if exists svc_dbt_transform;
-drop user if exists svc_analytics_read;
+drop user if exists svc_streamlit_app;
 
 --
 drop database if exists job_ads;
@@ -22,7 +22,7 @@ drop role if exists admin_job_ads;
 show users like 'anon_engineer';
 show users like 'svc_dlt_ingestion';
 show users like 'svc_dbt_transform';
-show users like 'svc_analytics_read';
+show users like 'svc_streamlit_app';
 
 show databases like 'job_ads';
 show warehouses like 'compute_wh';
