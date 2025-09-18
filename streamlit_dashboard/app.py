@@ -6,7 +6,7 @@ _OPTION_LABEL_ALL = "All"  # for use with widgets
 
 # -- setup streamlit pages
 
-st.set_page_config(page_title="Jobsearch Dashboard", page_icon="📊", layout="wide")
+st.set_page_config(page_title="Job Market Analytics Dashboard", page_icon="📊", layout="wide")
 
 pages = {
     "": [st.Page("pages/homepage.py", title="Home", icon="🏠")],
