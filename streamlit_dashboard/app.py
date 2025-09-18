@@ -9,12 +9,12 @@ _OPTION_LABEL_ALL = "All"  # for use with widgets
 st.set_page_config(page_title="Jobsearch Dashboard", page_icon="📊", layout="wide")
 
 pages = {
-    "Home": [st.Page("pages/homepage.py", title="Home", icon="🏠")],
+    "": [st.Page("pages/homepage.py", title="Home", icon="🏠")],
     "Analysis": [
         st.Page("pages/page_demand.py", title="Demand Overview", icon="📈"),
         st.Page("pages/page_employer.py", title="Employer Overview", icon="🏢"),
         st.Page("pages/page_urgency.py", title="Application Urgency", icon="⏳"),
-        st.Page("pages/page_geography.py", title="Geography", icon="🌍"),
+        st.Page("pages/page_geography.py", title="Urgency by region", icon="🌍"),
         st.Page("pages/page_browser.py", title="Job Browser", icon="🔎"),
     ],
 }
