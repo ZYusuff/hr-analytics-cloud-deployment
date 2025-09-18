@@ -73,8 +73,3 @@ chart = (
 )
 st.altair_chart(chart, use_container_width=True)
 
-# Raw data
-st.markdown(f"### 📂 Raw data for {selected_occupation_field}")
-st.dataframe(filtered_df)
-
-
