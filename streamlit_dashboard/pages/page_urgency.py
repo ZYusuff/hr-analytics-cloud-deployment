@@ -4,7 +4,7 @@ import altair as alt
 
 
 st.title("📈 Application urgency")
-st.write("This page shows which roles need urgent filling based on application deadlines.")
+st.write("This page shows which categories need urgent filling based on application deadlines.")
 
 # Hämta mart-data
 df = get_job_listings("marts.mart_urgency")
