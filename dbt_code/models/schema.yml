@@ -1,0 +1,196 @@
+models:
+  # DIMENSION TABLES TESTS
+  # Tests for dimension tables focus on primary key integrity and hierarchical relationships
+  
+  - name: dim_occupation
+    description: "Dimension table for job occupation categories"
+    tests:
+      # ROW COUNT TEST: Ensures the model contains data
+      - dbt_utils.at_least_one
+    columns:
+      - name: occupation_id
+        description: "Surrogate key for occupation"
+        tests:
+          # UNIQUENESS TEST: Ensures no duplicate occupation IDs
+          - unique
+          # NOT-NULL TEST: Ensures occupation_id is always populated
+          - not_null
+      - name: occupation_label
+        description: "Specific job title or role"
+        tests:
+          - not_null
+      - name: occupation_group
+        description: "Group that the occupation belongs to"
+      - name: occupation_field
+        description: "Broader field that the occupation belongs to"
+  
+  - name: dim_employer
+    description: "Dimension table for employer information"
+    tests:
+      - dbt_utils.at_least_one
+    columns:
+      - name: employer_id
+        description: "Surrogate key for employer"
+        tests:
+          - unique
+          - not_null
+      - name: employer_organization_number
+        description: "Organization identification number"
+        tests:
+          - not_null
+      - name: employer_name
+        description: "Name of the employer"
+        tests:
+          - not_null
+  
+  - name: dim_location
+    description: "Dimension table for geographic locations"
+    tests:
+      - dbt_utils.at_least_one
+    columns:
+      - name: location_id
+        description: "Surrogate key for location"
+        tests:
+          - unique
+          - not_null
+      - name: location_country_code
+        description: "Country code"
+        tests:
+          - not_null
+      - name: location_region_code
+        description: "Region code within country"
+      - name: location_municipality_code
+        description: "Municipality code within region"
+  
+  - name: dim_job_details
+    description: "Dimension table for job details"
+    tests:
+      - dbt_utils.at_least_one
+    columns:
+      - name: job_details_id
+        description: "Surrogate key for job details"
+        tests:
+          - unique
+          - not_null
+      - name: job_ad_id
+        description: "Original job ad identifier"
+        tests:
+          - not_null
+  
+  - name: dim_auxilliary_attributes
+    description: "Dimension table for additional job attributes"
+    tests:
+      - dbt_utils.at_least_one
+    columns:
+      - name: auxilliary_attributes_id
+        description: "Surrogate key for auxiliary attributes"
+        tests:
+          - unique
+          - not_null
+
+  # FACT TABLE TESTS
+  # Tests for fact tables focus on foreign key relationships, data types, and value ranges
+  
+  - name: fct_job_ads
+    description: "Fact table containing job advertisements"
+    tests:
+      # ROW COUNT TEST: Ensures the fact table contains data
+      - dbt_utils.at_least_one
+    columns:
+      - name: occupation_id
+        description: "Foreign key to dim_occupation"
+        tests:
+          # RELATIONSHIP TEST: Ensures foreign key integrity with dimension table
+          - relationships:
+              arguments:
+                to: ref('dim_occupation')
+                field: occupation_id
+          # NOT-NULL TEST: Ensures occupation_id is always populated
+          - not_null
+      
+      - name: employer_id
+        description: "Foreign key to dim_employer"
+        tests:
+          # RELATIONSHIP TEST: Ensures foreign key integrity with dimension table
+          - relationships:
+              arguments:
+                to: ref('dim_employer')
+                field: employer_id
+          - not_null
+      
+      - name: location_id
+        description: "Foreign key to dim_location"
+        tests:
+          # RELATIONSHIP TEST: Ensures foreign key integrity with dimension table
+          - relationships:
+              arguments:
+                to: ref('dim_location')
+                field: location_id
+          - not_null
+      
+      - name: job_details_id
+        description: "Foreign key to dim_job_details"
+        tests:
+          # RELATIONSHIP TEST: Ensures foreign key integrity with dimension table
+          - relationships:
+              arguments:
+                to: ref('dim_job_details')
+                field: job_details_id
+          - not_null
+      
+      - name: auxilliary_attributes_id
+        description: "Foreign key to dim_auxilliary_attributes"
+        tests:
+          # RELATIONSHIP TEST: Ensures foreign key integrity with dimension table
+          - relationships:
+              arguments:
+                to: ref('dim_auxilliary_attributes')
+                field: auxilliary_attributes_id
+          - not_null
+      
+      - name: relevance
+        description: "Relevance score of the job ad"
+        tests:
+          # VALUE RANGE TEST: Ensures relevance is between 0 and 1
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0  
+                max_value: 1 
+          # DATA TYPE TEST: Ensures relevance is a float
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              arguments:
+                column_type: float
+          - not_null
+      
+      - name: vacancies
+        description: "Number of open positions in the job ad"
+        tests: 
+          # STATISTICAL TEST: Ensures 99% of vacancies are within expected range
+          - dbt_expectations.expect_column_quantile_values_to_be_between:
+              arguments:
+                quantile: .99
+                min_value: 1
+                max_value: 20
+          # STATISTICAL TEST: Ensures maximum value is within expected range
+          - dbt_expectations.expect_column_max_to_be_between:
+              arguments:
+                min_value: 1
+                max_value: 20
+              config:
+                severity: warn
+          # DATA TYPE TEST: Ensures vacancies is a number
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              arguments:
+                column_type: number
+          - not_null
+      
+      - name: publication_date
+        description: "Date when the job ad was published"
+        tests:
+          # NOT-NULL TEST: Ensures publication_date is always populated
+          - not_null
+      
+      - name: application_deadline
+        description: "Deadline for job applications"
+        tests:
+          - not_null

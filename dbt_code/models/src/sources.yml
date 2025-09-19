@@ -1,8 +1,23 @@
 sources:
   - name: job_ads
     schema: staging
+    description: "Source tables for job advertisement data"
+    
+    # SOURCE FRESHNESS TEST
+    # This tests if source data is being updated regularly
+    # Uses publication_date to track data freshness
+    freshness:
+      warn_after: {count: 7, period: day}
+      error_after: {count: 30, period: day}
+    
+    # Field to use for freshness testing
+    loaded_at_field: publication_date
+    
     tables:
       - name: stg_ads
         identifier: technical_field_job_ads
+        description: "Source table for job advertisements"
+      
       - name: stg_coords
         identifier: technical_field_job_ads__workplace_address__coordinates
+        description: "Source table for workplace coordinates"
