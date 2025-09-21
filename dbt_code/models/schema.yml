@@ -1,42 +1,42 @@
 models:
 
   - name: fct_job_ads
-    description: "Fact table containing job advertisements"
+    description: "Fact table containing job advertisements with key metrics including relevance scores and number of vacancies. This table connects all dimension tables in the star schema."
     columns:
       # OCCUPATION_ID
       - name: occupation_id
-        description: "Foreign key to dim_occupation"
+        description: "Foreign key linking to dim_occupation. Represents the unique identifier for job occupation categories."
         tests:
-          # Group 1: Uniqueness and Not-Null Tests
+          # Uniqueness and Not-Null Tests
           - not_null
           
-          # Group 2: Relationship Tests
+          # Relationship Tests
           - relationships:
               to: ref('dim_occupation')
               field: occupation_id
       
       # EMPLOYER_ID
       - name: employer_id
-        description: "Foreign key to dim_employer"
+        description: "Foreign key linking to dim_employer. Identifies the organization or company that posted the job advertisement."
         tests:
-          # Group 1: Uniqueness and Not-Null Tests
+          # Uniqueness and Not-Null Tests
           # NOTE: 21 records fail this test - these job ads won't be linked to employer data
           - not_null
           
-          # Group 2: Relationship Tests
+          # Relationship Tests
           - relationships:
               to: ref('dim_employer')
               field: employer_id
       
       # LOCATION_ID
       - name: location_id
-        description: "Foreign key to dim_location"
+        description: "Foreign key linking to dim_location. Specifies the geographic location where the job is being offered."
         tests:
-          # Group 1: Uniqueness and Not-Null Tests
+          # Uniqueness and Not-Null Tests
           # NOTE: 56 records fail this test - these job ads won't have location data
           - not_null
           
-          # Group 2: Relationship Tests
+          # Relationship Tests
           - relationships:
               to: ref('dim_location')
               field: location_id
@@ -45,76 +45,76 @@ models:
   # Tests for dimension tables focus on primary key integrity and hierarchical relationships
   
   - name: dim_occupation
-    description: "Dimension table for job occupation categories"
+    description: "Dimension table containing job occupation categories with hierarchical classification from specific titles to broader fields."
     columns:
       - name: occupation_id
-        description: "Surrogate key for occupation"
+        description: "Primary key for the occupation dimension. Uniquely identifies each occupation entry."
         tests:
           # Uniqueness and Not-Null Tests
           - unique
           - not_null
       - name: occupation_label
-        description: "Specific job title or role"
+        description: "Specific job title or role designation. The most granular level of occupation classification."
         tests:
           # Uniqueness and Not-Null Tests
           - not_null
       - name: occupation_group
-        description: "Group that the occupation belongs to"
+        description: "Mid-level occupational category that groups similar occupation labels. Represents the intermediate level in the occupation hierarchy."
         tests:
           # Uniqueness and Not-Null Tests
           - not_null
       - name: occupation_field
-        description: "Broader field that the occupation belongs to"
+        description: "Highest-level occupational classification. Represents the broadest category in the occupation hierarchy."
         tests:
           # Uniqueness and Not-Null Tests
           - not_null
   
   - name: dim_employer
-    description: "Dimension table for employer information"
+    description: "Dimension table containing employer information including organization numbers and names. This table stores details about companies posting job advertisements."
     columns:
       - name: employer_id
-        description: "Surrogate key for employer"
+        description: "Primary key for the employer dimension. Uniquely identifies each employer in the system."
         tests:
           # Uniqueness and Not-Null Tests
           - unique
           - not_null
       - name: employer_organization_number
-        description: "Organization identification number"
+        description: "Official organization identification number. Used for legal identification and cross-referencing with external systems."
         tests:
           # Uniqueness and Not-Null Tests
           # KNOWN ISSUE: 19 employers are missing organization numbers.
           # See docs/data_quality_issues.md for details.
           - not_null
       - name: employer_name
-        description: "Name of the employer"
+        description: "Official registered name of the employer or organization. Used for display and searching purposes."
         tests:
           # Uniqueness and Not-Null Tests
           - not_null
   
   - name: dim_location
-    description: "Dimension table for geographic locations"
+    description: "Dimension table containing geographic location information with hierarchical structure from country down to municipality level."
     columns:
       - name: location_id
-        description: "Surrogate key for location"
+        description: "Primary key for the location dimension. Uniquely identifies each geographic location in the system."
         tests:
           # Uniqueness and Not-Null Tests
           - unique
           - not_null
       - name: location_country_code
-        description: "Country code"
+        description: "ISO country code. Identifies the country where the job is located."
         tests:
           # Uniqueness and Not-Null Tests
           - not_null
       - name: location_region_code
-        description: "Region code within country"
+        description: "Region/province/state code within the country. Second level in the geographic hierarchy."
       - name: location_municipality_code
-        description: "Municipality code within region"
+        description: "Municipality/city code within the region. Most granular level of geographic specification available."
   
   - name: dim_job_details
-    description: "Dimension table for job details"
+    description: "Dimension table containing detailed information about job postings including work hours, duration, and other job-specific attributes."
     columns:
       - name: job_details_id
-        description: "Surrogate key for job details"
+        description: "Primary key for the job details dimension. Uniquely identifies each set of job details."
         tests:
           # Uniqueness and Not-Null Tests
           # KNOWN ISSUE: 5 job_details_id values are duplicated.
@@ -122,16 +122,16 @@ models:
           - unique
           - not_null
       - name: job_ad_id
-        description: "Original job ad identifier"
+        description: "Original job advertisement identifier from the source system. Used for traceability and linking back to source data."
         tests:
           # Uniqueness and Not-Null Tests
           - not_null
   
   - name: dim_auxilliary_attributes
-    description: "Dimension table for additional job attributes"
+    description: "Dimension table containing additional job attributes that don't fit into the main categories. Stores supplementary information about job postings."
     columns:
       - name: auxilliary_attributes_id
-        description: "Surrogate key for auxiliary attributes"
+        description: "Primary key for the auxiliary attributes dimension. Uniquely identifies each set of auxiliary job attributes."
         tests:
           # Uniqueness and Not-Null Tests
           - unique
@@ -141,10 +141,10 @@ models:
   # Tests for fact tables focus on foreign key relationships, data types, and value ranges
   
   - name: fct_job_ads
-    description: "Fact table containing job advertisements"
+    description: "Fact table containing job advertisements with key metrics including relevance scores and number of vacancies. This table connects all dimension tables in the star schema."
     columns:
       - name: occupation_id
-        description: "Foreign key to dim_occupation"
+        description: "Foreign key linking to dim_occupation. Represents the unique identifier for job occupation categories."
         tests:
           # Uniqueness and Not-Null Tests
           - not_null
@@ -155,7 +155,7 @@ models:
               field: occupation_id
       
       - name: employer_id
-        description: "Foreign key to dim_employer"
+        description: "Foreign key linking to dim_employer. Identifies the organization or company that posted the job advertisement."
         tests:
           # Uniqueness and Not-Null Tests
           # KNOWN ISSUE: 21 job ads are missing employer information.
@@ -168,7 +168,7 @@ models:
               field: employer_id
       
       - name: location_id
-        description: "Foreign key to dim_location"
+        description: "Foreign key linking to dim_location. Specifies the geographic location where the job is being offered."
         tests:
           # Uniqueness and Not-Null Tests
           # KNOWN ISSUE: 56 job ads are missing location information.
@@ -182,7 +182,7 @@ models:
       
       # JOB_DETAILS_ID
       - name: job_details_id
-        description: "Foreign key to dim_job_details"
+        description: "Foreign key linking to dim_job_details. Contains references to detailed job posting information such as job type and duration."
         tests:
           # Uniqueness and Not-Null Tests
           - not_null
@@ -196,24 +196,24 @@ models:
       
       # AUXILLIARY_ATTRIBUTES_ID
       - name: auxilliary_attributes_id
-        description: "Foreign key to dim_auxilliary_attributes"
+        description: "Foreign key linking to dim_auxilliary_attributes. Contains references to supplementary job attributes not captured in main dimensions."
         tests:
-          # Group 1: Uniqueness and Not-Null Tests
+          # Uniqueness and Not-Null Tests
           - not_null
           
-          # Group 2: Relationship Tests
+          # Relationship Tests
           - relationships:
               to: ref('dim_auxilliary_attributes')
               field: auxilliary_attributes_id
       
       # RELEVANCE
       - name: relevance
-        description: "Relevance score of the job ad"
+        description: "Calculated relevance score for the job advertisement. Ranges from 0 (low relevance) to 1 (high relevance) and is used for ranking and filtering."
         tests:
-          # Group 1: Uniqueness and Not-Null Tests
+          # Uniqueness and Not-Null Tests
           - not_null
           
-          # Group 3: Column Value Expectation Tests
+          # Column Value Expectation Tests
           - dbt_expectations.expect_column_values_to_be_between:
               min_value: 0  
               max_value: 1 
@@ -222,7 +222,7 @@ models:
       
       # VACANCIES
       - name: vacancies
-        description: "Number of open positions in the job ad"
+        description: "Number of open positions available in this job advertisement. Indicates how many people the employer is looking to hire."
         tests: 
           # Uniqueness and Not-Null Tests
           # KNOWN ISSUE: 1 job ad is missing vacancy count information.
@@ -245,21 +245,21 @@ models:
                 # See docs/data_quality_issues.md for details.
       
       - name: publication_date
-        description: "Date when the job ad was published"
+        description: "Date when the job advertisement was officially published and made available to job seekers. Used for time-based analysis and filtering."
         tests:
-          # Group 1: Uniqueness and Not-Null Tests
+          # Uniqueness and Not-Null Tests
           - not_null
           
-          # Group 4: Custom SQL Tests for Data Consistency
+          # Custom SQL Tests for Data Consistency
           # Example: Could add custom tests for valid date ranges
       
       - name: application_deadline
-        description: "Deadline for job applications"
+        description: "Final date by which job applications must be submitted. Critical for urgency analysis and understanding application windows."
         tests:
-          # Group 1: Uniqueness and Not-Null Tests
+          # Uniqueness and Not-Null Tests
           - not_null
           
-          # Group 4: Custom SQL Tests for Data Consistency
+          # Custom SQL Tests for Data Consistency
           # Example: Could add custom tests for deadline > publication_date
           
           # Custom SQL Tests could be added here for deadline validations
