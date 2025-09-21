@@ -1,0 +1,87 @@
+// Job Market HR Analytics - Data Warehouse Star Schema
+// Created: September 21, 2025
+
+Project job_market_hr_analytics {
+  database_type: 'Snowflake'
+  Note: 'Job Market HR Analytics Data Warehouse'
+}
+
+// FACT TABLE
+Table fct_job_ads {
+  // This is the central fact table connecting all dimensions
+  // Primary key not explicitly defined in schema
+  occupation_id varchar [not null, ref: > dim_occupation.occupation_id, note: 'Foreign key to occupation dimension']
+  employer_id varchar [ref: > dim_employer.employer_id, note: 'Foreign key to employer dimension (21 records missing)']
+  location_id varchar [ref: > dim_location.location_id, note: 'Foreign key to location dimension (56 records missing)']
+  job_details_id varchar [not null, ref: > dim_job_details.job_details_id, note: 'Foreign key to job details dimension']
+  auxilliary_attributes_id varchar [not null, ref: > dim_auxilliary_attributes.auxilliary_attributes_id, note: 'Foreign key to auxiliary attributes dimension']
+  
+  // Metrics and dates
+  relevance float [not null, note: 'Relevance score (0-1) for ranking and filtering']
+  vacancies int [not null, note: 'Number of open positions available']
+  publication_date date [not null, note: 'Date when job ad was published']
+  application_deadline date [not null, note: 'Final date for applications']
+  last_publication_date date [note: 'Date of last publication if republished']
+
+  note: 'Fact table containing job advertisements with key metrics and dimensions. Central table in the star schema connecting all dimension tables.'
+}
+
+// DIMENSION TABLES
+Table dim_occupation {
+  occupation_id varchar [pk, note: 'Surrogate key generated from occupation_label']
+  occupation_label varchar [not null, note: 'Specific job title or role']
+  occupation_group varchar [not null, note: 'Mid-level occupational category']
+  occupation_field varchar [not null, note: 'Highest-level occupational classification']
+
+  note: 'Dimension table containing job occupation categories with hierarchical classification'
+}
+
+Table dim_employer {
+  employer_id varchar [pk, note: 'Surrogate key generated from name, number and workplace']
+  employer_organization_number varchar [note: 'Organization identification number (19 missing)']
+  employer_name varchar [not null, note: 'Name of the employer']
+  employer_workplace varchar [note: 'Specific workplace location']
+  workplace_street_address varchar [note: 'Street address of workplace']
+  workplace_region varchar [note: 'Region of workplace']
+  workplace_postcode varchar [note: 'Postal code of workplace']
+  workplace_city varchar [note: 'City of workplace']
+  workplace_country varchar [note: 'Country of workplace']
+
+  note: 'Dimension table containing employer information'
+}
+
+Table dim_location {
+  location_id varchar [pk, note: 'Surrogate key generated from country, region and municipality codes']
+  location_country varchar [note: 'Country name']
+  location_country_code varchar [not null, note: 'Country code']
+  location_region varchar [note: 'Region name']
+  location_region_code varchar [note: 'Region code']
+  location_municipality varchar [note: 'Municipality name']
+  location_municipality_code varchar [note: 'Municipality code']
+
+  note: 'Dimension table containing geographic location information with hierarchical structure'
+}
+
+Table dim_job_details {
+  job_details_id varchar [pk, note: 'Surrogate key generated from job_ad_id (5 duplicates exist)']
+  job_ad_id varchar [not null, note: 'Original job ad identifier from source system']
+  headline varchar [note: 'Job advertisement headline']
+  description varchar [note: 'Job description text']
+  description_html_formatted varchar [note: 'HTML formatted job description']
+  employment_type varchar [note: 'Type of employment (full-time, part-time, etc.)']
+  duration varchar [note: 'Duration of employment']
+  salary_type varchar [note: 'Type of salary']
+  scope_of_work_min float [note: 'Minimum scope of work (percentage)']
+  scope_of_work_max float [note: 'Maximum scope of work (percentage)']
+
+  note: 'Dimension table containing detailed information about job postings'
+}
+
+Table dim_auxilliary_attributes {
+  auxilliary_attributes_id varchar [pk, note: 'Surrogate key for auxiliary attributes']
+  experience_required boolean [note: 'Whether experience is required for the job']
+  driver_license boolean [note: 'Whether a driver license is required']
+  access_to_own_car boolean [note: 'Whether access to own car is required']
+
+  note: 'Dimension table containing additional job attributes that don\'t fit into main categories'
+}
