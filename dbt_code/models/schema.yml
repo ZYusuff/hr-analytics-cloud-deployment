@@ -1,5 +1,6 @@
 models:
 
+  # FACT TABLE
   - name: fct_job_ads
     description: "Fact table containing job advertisements with key metrics including relevance scores and number of vacancies. This table connects all dimension tables in the star schema."
     columns:
@@ -40,6 +41,88 @@ models:
           - relationships:
               to: ref('dim_location')
               field: location_id
+              
+      # JOB_DETAILS_ID
+      - name: job_details_id
+        description: "Foreign key linking to dim_job_details. Contains references to detailed job posting information such as job type and duration."
+        tests:
+          # Uniqueness and Not-Null Tests
+          - not_null
+          
+          # Relationship Tests
+          # KNOWN ISSUE: Related to the 5 duplicate job_details_id values in dim_job_details.
+          # See docs/data_quality_issues.md for details.
+          - relationships:
+              to: ref('dim_job_details')
+              field: job_details_id
+      
+      # AUXILLIARY_ATTRIBUTES_ID
+      - name: auxilliary_attributes_id
+        description: "Foreign key linking to dim_auxilliary_attributes. Contains references to supplementary job attributes not captured in main dimensions."
+        tests:
+          # Uniqueness and Not-Null Tests
+          - not_null
+          
+          # Relationship Tests
+          - relationships:
+              to: ref('dim_auxilliary_attributes')
+              field: auxilliary_attributes_id
+              
+      # RELEVANCE
+      - name: relevance
+        description: "Calculated relevance score for the job advertisement. Ranges from 0 (low relevance) to 1 (high relevance) and is used for ranking and filtering."
+        tests:
+          # Uniqueness and Not-Null Tests
+          - not_null
+          
+          # Column Value Expectation Tests
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0  
+              max_value: 1 
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: float
+      
+      # VACANCIES
+      - name: vacancies
+        description: "Number of open positions available in this job advertisement. Indicates how many people the employer is looking to hire."
+        tests: 
+          # Uniqueness and Not-Null Tests
+          # KNOWN ISSUE: 1 job ad is missing vacancy count information.
+          # See docs/data_quality_issues.md for details.
+          - not_null
+          
+          # Column Value Expectation Tests
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: number
+          - dbt_expectations.expect_column_quantile_values_to_be_between:
+              quantile: .99
+              min_value: 1
+              max_value: 20
+          - dbt_expectations.expect_column_max_to_be_between:
+              min_value: 1
+              max_value: 20
+              config:
+                severity: warn
+                # KNOWN ISSUE: At least one job ad has vacancies > 20.
+                # See docs/data_quality_issues.md for details.
+      
+      - name: publication_date
+        description: "Date when the job advertisement was officially published and made available to job seekers. Used for time-based analysis and filtering."
+        tests:
+          # Uniqueness and Not-Null Tests
+          - not_null
+          
+          # Custom SQL Tests for Data Consistency
+          # Example: Could add custom tests for valid date ranges
+      
+      - name: application_deadline
+        description: "Final date by which job applications must be submitted. Critical for urgency analysis and understanding application windows."
+        tests:
+          # Uniqueness and Not-Null Tests
+          - not_null
+          
+          # Custom SQL Tests for Data Consistency
+          # Example: Could add custom tests for deadline > publication_date
                 
   # DIMENSION TABLES TESTS
   # Tests for dimension tables focus on primary key integrity and hierarchical relationships
@@ -136,49 +219,6 @@ models:
           # Uniqueness and Not-Null Tests
           - unique
           - not_null
-
-  # FACT TABLE TESTS
-  # Tests for fact tables focus on foreign key relationships, data types, and value ranges
-  
-  - name: fct_job_ads
-    description: "Fact table containing job advertisements with key metrics including relevance scores and number of vacancies. This table connects all dimension tables in the star schema."
-    columns:
-      - name: occupation_id
-        description: "Foreign key linking to dim_occupation. Represents the unique identifier for job occupation categories."
-        tests:
-          # Uniqueness and Not-Null Tests
-          - not_null
-          
-          # Relationship Tests
-          - relationships:
-              to: ref('dim_occupation')
-              field: occupation_id
-      
-      - name: employer_id
-        description: "Foreign key linking to dim_employer. Identifies the organization or company that posted the job advertisement."
-        tests:
-          # Uniqueness and Not-Null Tests
-          # KNOWN ISSUE: 21 job ads are missing employer information.
-          # See docs/data_quality_issues.md for details.
-          - not_null
-          
-          # Relationship Tests
-          - relationships:
-              to: ref('dim_employer')
-              field: employer_id
-      
-      - name: location_id
-        description: "Foreign key linking to dim_location. Specifies the geographic location where the job is being offered."
-        tests:
-          # Uniqueness and Not-Null Tests
-          # KNOWN ISSUE: 56 job ads are missing location information.
-          # See docs/data_quality_issues.md for details.
-          - not_null
-          
-          # Relationship Tests
-          - relationships:
-              to: ref('dim_location')
-              field: location_id
       
       # JOB_DETAILS_ID
       - name: job_details_id
