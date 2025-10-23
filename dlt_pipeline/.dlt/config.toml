@@ -1,7 +1,0 @@
-[jobsearch.sources.config]
-table_name = "technical_field_job_ads"
-occupation_fields = ["RPTn_bxG_ExZ", "NYW6_mP6_vwf", "ScKy_FHB_7wT"]
-
-[destination]
-replace_strategy = "truncate-and-insert"
-staging_dataset_name_layout="_dlt_staging_jobsearch"
