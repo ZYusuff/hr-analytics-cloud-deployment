@@ -1,7 +1,5 @@
 FROM python:3.11-slim
 
-ENV DUCKDB_PATH=/data_warehouse/job_ads.duckdb
-
 WORKDIR /app/dashboard
 
 COPY dashboard/ /app/dashboard/
