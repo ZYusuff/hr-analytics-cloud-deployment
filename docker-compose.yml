@@ -3,20 +3,7 @@ services:
     build:
       context: .
       dockerfile: dockerfile.dwh
-    volumes:
-      # read-only bind mount
-      - ${HOME}/.dbt/profiles.yml:/pipeline/profiles.yml:ro
-      # bind mount
-      - ./data_warehouse:/data_warehouse
     ports:
       - "3000:3000"
+    image: # put your login server from azure container registry here
 
-  dashboard:
-    build:
-      context: .
-      dockerfile: dockerfile.dashboard
-    volumes:
-      # read-only bind mount
-      - ./data_warehouse:/data_warehouse:ro
-    ports:
-      - "8501:8501"
