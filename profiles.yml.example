@@ -1,4 +1,4 @@
-dbt_duckdb_docker:
+dbt_duckdb:
     target: dev
     outputs:
         dev:
