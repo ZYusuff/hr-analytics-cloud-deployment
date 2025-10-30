@@ -2,7 +2,7 @@ from pathlib import Path
 import duckdb
 
 # data warehouse directory
-FILE_SHARE_PATH = Path("/mnt/data/job_ads.duckdb")
+db_path = Path("/mnt/data/job_ads.duckdb")
  
 
 def query_job_listings(query='SELECT * FROM marts.mart_technical_jobs'):
